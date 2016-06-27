@@ -23,6 +23,8 @@ bool JsonConfig::printConfig()
     Serial.print(F("sensor_dht22_on   : "));   Serial.println(sensor_dht22_on);
     Serial.print(F("sensor_sht21_on   : "));   Serial.println(sensor_sht21_on);
     Serial.print(F("sensor_bh1750_on  : "));   Serial.println(sensor_bh1750_on);
+    Serial.print(F("sensor_co2_on     : "));   Serial.println(sensor_co2_on);
+    Serial.print(F("sensor_bme280_on  : "));   Serial.println(sensor_bme280_on);
 
     Serial.print(F("rtc_on            : "));   Serial.println(rtc_on);
     Serial.print(F("use_server_time   : "));   Serial.println(use_server_time);
@@ -93,6 +95,8 @@ bool JsonConfig::loadConfig()
     if (json.containsKey("sensor_dht22_on")) { const char* sensor_dht22_on_char = json["sensor_dht22_on"]; sprintf_P(sensor_dht22_on, ("%s"), sensor_dht22_on_char); }
     if (json.containsKey("sensor_sht21_on")) { const char* sensor_sht21_on_char = json["sensor_sht21_on"]; sprintf_P(sensor_sht21_on, ("%s"), sensor_sht21_on_char); }
     if (json.containsKey("sensor_bh1750_on")) { const char* sensor_bh1750_on_char = json["sensor_bh1750_on"]; sprintf_P(sensor_bh1750_on, ("%s"), sensor_bh1750_on_char); }
+    if (json.containsKey("sensor_co2_on")) { const char* sensor_co2_on_char = json["sensor_co2_on"]; sprintf_P(sensor_co2_on, ("%s"), sensor_co2_on_char); }
+    if (json.containsKey("sensor_bme280_on")) { const char* sensor_bme280_on_char = json["sensor_bme280_on"]; sprintf_P(sensor_bme280_on, ("%s"), sensor_bme280_on_char); }
 
     if (json.containsKey("rtc_on")) { const char* rtc_on_char = json["rtc_on"]; sprintf_P(rtc_on, ("%s"), rtc_on_char); }
     if (json.containsKey("use_server_time")) { const char* use_server_time_char = json["use_server_time"]; sprintf_P(use_server_time, ("%s"), use_server_time_char); }
@@ -139,6 +143,8 @@ bool JsonConfig::saveConfig()
     json["sensor_dht22_on"] = sensor_dht22_on;
     json["sensor_sht21_on"] = sensor_sht21_on;
     json["sensor_bh1750_on"] = sensor_bh1750_on;
+    json["sensor_co2_on"] = sensor_co2_on;
+    json["sensor_bme280_on"] = sensor_bme280_on;
 
     json["rtc_on"] = rtc_on;
     json["use_server_time"] = use_server_time;

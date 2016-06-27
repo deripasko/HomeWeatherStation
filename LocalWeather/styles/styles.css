@@ -320,3 +320,19 @@ hr {
     text-align: center;
     margin-top: 50px;
 }
+
+.jumboLoginMessage {
+    font-size: 20px;
+    font-weight: 200;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.noDataMessage {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 200;
+    position: absolute;
+    top: 200px;
+    width: 100%;
+}

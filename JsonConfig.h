@@ -51,6 +51,8 @@ public:
     char sensor_dht22_on[32] = "1";
     char sensor_sht21_on[32] = "1";
     char sensor_bh1750_on[32] = "1";
+    char sensor_co2_on[32] = "1";
+    char sensor_bme280_on[32] = "1";
 
     char rtc_on[32] = "1";
     char use_server_time[32] = "1";
