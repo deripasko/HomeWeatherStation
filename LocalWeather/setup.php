@@ -49,10 +49,9 @@
                 <div class="form-group row">
                     <label class="col-sm-2">&nbsp;</label>
                     <div class="col-sm-10">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" id="inputActive" /> Модуль активен
-                            </label>
+                        <div class="checkbox checkbox-warning">
+                            <input type="checkbox" id="inputActive" />
+                            <label for="inputActive">Модуль активен</label>
                         </div>
                     </div>
                 </div>

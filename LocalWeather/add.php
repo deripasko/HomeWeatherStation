@@ -48,6 +48,10 @@ $temperature3 = valueOrNull((float)getParam($object, "temperature3"));
 $humidity3 = valueOrNull((float)getParam($object, "humidity3"));
 $pressure3 = valueOrNull((float)getParam($object, "pressure3"));
 
+$temperature4 = valueOrNull((float)getParam($object, "temperature4"));
+$humidity4 = valueOrNull((float)getParam($object, "humidity4"));
+$pressure4 = valueOrNull((float)getParam($object, "pressure4"));
+
 $illumination = valueOrNull((float)getParam($object, "illumination"));
 $co2level = valueOrNull((float)getParam($object, "co2"));
 
@@ -69,7 +73,7 @@ try {
     return;
 }
 
-$sql = "INSERT INTO WeatherData (ModuleMAC, Temperature1, Temperature2, Temperature3, Humidity1, Humidity2, Humidity3, Pressure1, Pressure2, Pressure3, Illumination, CO2) VALUES ('$mac', $temperature1, $temperature2, $temperature3, $humidity1, $humidity2, $humidity3, $pressure1, $pressure2, $pressure3, $illumination, $co2level)";
+$sql = "INSERT INTO WeatherData (ModuleMAC, Temperature1, Temperature2, Temperature3, Temperature4, Humidity1, Humidity2, Humidity3, Humidity4, Pressure1, Pressure2, Pressure3, Pressure4, Illumination, CO2) VALUES ('$mac', $temperature1, $temperature2, $temperature3, $temperature4, $humidity1, $humidity2, $humidity3, $humidity4, $pressure1, $pressure2, $pressure3, $pressure4, $illumination, $co2level)";
 try {
     mysql_select_db($databaseName);
     mysql_query($sql);
@@ -111,12 +115,15 @@ $data = array(
     'temperature1' => $temperature1,
     'temperature2' => $temperature2,
     'temperature3' => $temperature3,
+    'temperature4' => $temperature4,
     'humidity1' => $humidity1,
     'humidity2' => $humidity2,
     'humidity3' => $humidity3,
+    'humidity4' => $humidity4,
     'pressure1' => $pressure1,
     'pressure2' => $pressure2,
     'pressure3' => $pressure3,
+    'pressure4' => $pressure4,
     'illumination' => $illumination,
     'co2' => $co2level,
     'year' => (int)date('Y'),

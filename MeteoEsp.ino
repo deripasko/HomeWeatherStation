@@ -1114,7 +1114,7 @@ float getTempForJson(float value)
 
 float getPressureForJson(float value)
 {
-    return isnan(value) ? 0 : value;
+    return (isnan(value) || value > 1000) ? 0 : value;
 }
 
 float getHumidityForJson(float value)

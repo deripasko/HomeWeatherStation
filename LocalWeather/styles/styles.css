@@ -336,3 +336,21 @@ hr {
     top: 200px;
     width: 100%;
 }
+
+.module-online {
+    background-image: url(../images/bullet-green-alt.png);
+    background-repeat: no-repeat;
+    background-position-y: 5px;
+}
+
+.module-offline {
+    background-image: url(../images/bullet-red-alt.png);
+    background-repeat: no-repeat;
+    background-position-y: 5px;
+}
+
+.module-inactive {
+    background-image: url(../images/bullet-orange-alt.png);
+    background-repeat: no-repeat;
+    background-position-y: 5px;
+}

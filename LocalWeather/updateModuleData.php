@@ -14,6 +14,11 @@ if (isset($_REQUEST["description"])) {
     $requester->updateData("UPDATE WeatherModule SET Description = '$description' WHERE MAC = '$mac'");
 }
 
+if (isset($_REQUEST["isActive"])) {
+    $isActive = $_REQUEST["isActive"] == "true" ? 1 : 0;
+    $requester->updateData("UPDATE WeatherModule SET IsActive = $isActive WHERE MAC = '$mac'");
+}
+
 $allData = $requester->getData("SELECT * FROM WeatherModule");
 
 print json_encode($allData, JSON_UNESCAPED_UNICODE);
