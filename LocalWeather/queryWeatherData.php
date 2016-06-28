@@ -10,6 +10,7 @@ $pageIndex = (int)$_REQUEST["pageIndex"];
 $pageSize = (int)$_REQUEST["pageSize"];
 $queryType = $_REQUEST["queryType"];
 $interval = $_REQUEST["interval"];
+$filteredMacs = $_REQUEST["filteredMacs"];
 
 $params = (object) [];
 $params->sortBy = $sortBy;
@@ -18,6 +19,7 @@ $params->pageIndex = $pageIndex;
 $params->pageSize = $pageSize;
 $params->queryType = $queryType;
 $params->interval = $interval;
+$params->filteredMacs = $filteredMacs;
 
 $requester = new Requester;
 $allData = $requester->getWeatherData($params);

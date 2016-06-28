@@ -44,11 +44,8 @@
             <div id="collapse1" class="panel-collapse collapse">
                 <div class="panel-body">
 
-                    <div id="moduleController"></div>
-                    <div id="jq-dropdown-1" class="jq-dropdown jq-dropdown-tip">
-                        <ul class="jq-dropdown-menu" id="modulesMenu">
-                        </ul>
-                    </div>
+                    <p>Отображать данные с выбранных модулей (если ничего не выбрано - будут показаны все данные):</p>
+                    <div id="modulesList"></div>
 
                     <hr/>
 
@@ -66,8 +63,8 @@
 
                     <hr/>
 
+                    <p>Отображать данные с сенсоров:</p>
                     <div id="sensorsList"></div>
-
                 </div>
             </div>
         </div>

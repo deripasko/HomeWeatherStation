@@ -11,8 +11,10 @@ CREATE TABLE IF NOT EXISTS `WeatherModule` (
   `Description` text,
   `SensorDelay` int(11) DEFAULT NULL,
   `LastSeenDateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `IsActive` bit(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `IsActive` bit(1) DEFAULT NULL,
+  `TableVisibility` bit(1) DEFAULT b'1',
+  `ChartVisibility` bit(1) DEFAULT b'1'
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
 -- Indexes for dumped tables
