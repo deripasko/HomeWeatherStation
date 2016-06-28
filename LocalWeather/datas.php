@@ -42,6 +42,8 @@
             </div>
             <div id="collapse1" class="panel-collapse collapse">
                 <div class="panel-body">
+                    <div id="modulesList"></div>
+                    <hr/>
                     <div id="sensorsList"></div>
                 </div>
             </div>

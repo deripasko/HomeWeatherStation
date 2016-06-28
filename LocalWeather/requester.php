@@ -153,7 +153,7 @@ class Requester
 
         if ($params->queryType == "all") {
             $rowsToSkip = $params->pageIndex * $params->pageSize;
-            $query = "SELECT SQL_CALC_FOUND_ROWS wd.ID, wm.ModuleName, wm.ModuleID, wm.Description, wd.Temperature1, wd.Temperature2, wd.Temperature3, wd.Temperature4, wd.Humidity1, wd.Humidity2, wd.Humidity3, wd.Humidity4, wd.Pressure1, wd.Pressure2, wd.Pressure3, wd.Pressure4, wd.Illumination, wd.CO2, wd.MeasuredDateTime FROM WeatherData wd JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
+            $query = "SELECT SQL_CALC_FOUND_ROWS wd.ID, wm.MAC, wm.ModuleName, wm.ModuleID, wm.Description, wd.Temperature1, wd.Temperature2, wd.Temperature3, wd.Temperature4, wd.Humidity1, wd.Humidity2, wd.Humidity3, wd.Humidity4, wd.Pressure1, wd.Pressure2, wd.Pressure3, wd.Pressure4, wd.Illumination, wd.CO2, wd.MeasuredDateTime FROM WeatherData wd JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
         } else {
             $query = "SELECT wd.* FROM WeatherData wd WHERE DATE_SUB(NOW(), INTERVAL $params->interval) < MeasuredDateTime";
         }
