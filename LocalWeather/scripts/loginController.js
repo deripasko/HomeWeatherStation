@@ -1,19 +1,40 @@
 
 var loginController = function(params) {
 
-    function validateForm(evt) {
-        var errors = [];
-        var email = ge("username").value;
-        var password = ge("password").value;
+    var userNameField = null;
+    var passwordField = null;
+    var btnLogin = null;
+    var errorPane = null;
 
-        var errorPane = ge("errorPane");
+    function initData() {
+        userNameField = ge("username");
+        passwordField = ge("password");
+        btnLogin = ge("btnLogin");
+        errorPane = ge("errorPane");
+    }
+
+    function disableForm(disable) {
+        userNameField.disabled = passwordField.disabled = btnLogin.disabled = disable;
+    }
+
+    function validateForm(evt) {
+
+        var errors = [];
+        var email = userNameField.value;
+        var password = passwordField.value;
+
+        var emailIsValid = true;
+        var passwordIsValid = true;
+
         errorPane.innerHTML = "";
 
-        if (isStringEmpty(email)) {
-            errors.push("Введите e-mail");
+        if (isStringEmpty(email) || !validateEmail(email)) {
+            errors.push("Введите валидный e-mail");
+            emailIsValid = false;
         }
         if (isStringEmpty(password)) {
             errors.push("Введите пароль");
+            passwordIsValid = false;
         }
 
         if (errors.length == 0) {
@@ -28,27 +49,49 @@ var loginController = function(params) {
             }
         }
 
-        if (isStringEmpty(email)) {
-            ge("username").focus();
+        if (!emailIsValid) {
+            userNameField.focus();
         }
-        else if (isStringEmpty(password)) {
-            ge("password").focus();
+        else if (!passwordIsValid) {
+            passwordField.focus();
         }
 
-        EventHelper.cancel(evt);
         errorPane.style.visibility = "visible";
 
         return false;
     }
 
     function doLogin(evt) {
-        if (!validateForm(evt)) {
+        EventHelper.cancel(evt);
+        if (validateForm(evt)) {
+            disableForm(true);
+            loginUser();
+        }
+    }
+
+    function loginUser() {
+        var email = userNameField.value;
+        var password = passwordField.value;
+        queryHelper.requestUserData({ action: "login", email: email, password: password }, loginUserCallback);
+    }
+
+    function loginUserCallback(payload) {
+        if (payload.result === true) {
+            document.location = "/index.php";
+        } else {
+            disableForm(false);
+            errorPane.innerHTML = "Введены неверные e-mail и/или пароль.";
+            errorPane.style.visibility = "visible";
+
+            userNameField.value = passwordField.value = "";
+            userNameField.focus();
         }
     }
 
     function init() {
-        ge("username").focus();
-        ge("btnLogin").onclick = doLogin;
+        initData();
+        userNameField.focus();
+        btnLogin.onclick = doLogin;
     }
 
     init();

@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 include_once("dbconfig.php");
 include_once("emailConfig.php");
 include_once("lib/password.php");
@@ -203,6 +205,9 @@ class Requester
             "rowsCount" => (int)$rowsCount
         );
 
+        mysql_free_result($result);
+        mysql_close($link);
+
         return $allData;
     }
 
@@ -239,7 +244,6 @@ class Requester
         global $databaseName;
         global $databaseLogin;
         global $databasePassword;
-        global $hostAddress;
 
         $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
             or die("Could not connect : " . mysql_error());
@@ -249,7 +253,7 @@ class Requester
 
         $email = trim($email);
         $password = password_hash(trim($password), PASSWORD_DEFAULT);
-        $code = trim($this->getGUID(), "{}");
+        $code = substr(str_replace("-", "", trim($this->getGUID(), "{}")), 0, 16);
 
         $query = "INSERT INTO WeatherUser (UserName, Email, Password, VerificationCode) VALUES (LOWER('$email'), LOWER('$email'), '$password', UPPER('$code'))";
         mysql_query($query)
@@ -258,11 +262,64 @@ class Requester
         $id = mysql_insert_id();
         mysql_close($link);
 
-        $href = "$hostAddress/register.php?code=$code";
         $this->sendEmail($email, "Регистрация на сайте Домашней метеостанции",
-            "Для окончания регистрации перейдите по ссылке: <a href='$href'>$href</a> или вставьте проверочный код<br/><b>$code</b><br/>в поле ввода.");
+            "Для окончания регистрации введите проверочный код<br/><b>$code</b><br/>в личном кабинете пользователя в течение трёх дней.");
 
         return $id;
+    }
+
+    public function loginUser($email, $password) {
+
+        global $databaseHost;
+        global $databaseName;
+        global $databaseLogin;
+        global $databasePassword;
+
+        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
+            or die("Could not connect : " . mysql_error());
+
+        mysql_select_db($databaseName)
+            or die("Could not select database");
+
+        $email = trim($email);
+        $password = trim($password);
+
+        $query = "SELECT Password, UserName FROM WeatherUser WHERE LOWER('$email') = LOWER(Email)";
+        $result = mysql_query($query)
+            or die("Query failed: " . mysql_error());
+
+        $line = mysql_fetch_row($result);
+        $databasePassword = $line[0];
+        $databaseUserName = $line[1];
+        $result = password_verify($password, $databasePassword);
+
+        if ($result) {
+            $_SESSION["username"] = $databaseUserName;
+        }
+
+        mysql_close($link);
+
+        return $result;
+    }
+
+    public function validateUser($code) {
+
+        global $databaseHost;
+        global $databaseName;
+        global $databaseLogin;
+        global $databasePassword;
+
+        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
+            or die("Could not connect : " . mysql_error());
+
+        mysql_select_db($databaseName)
+            or die("Could not select database");
+
+        $query = "UPDATE WeatherUser SET IsActive = 1, VerifiedDateTime = CURRENT_TIMESTAMP WHERE VerificationCode = '$code'";
+        mysql_query($query)
+            or die("Query failed: " . mysql_error());
+
+        mysql_close($link);
     }
 
     private function sendEmail($to, $subject, $text) {

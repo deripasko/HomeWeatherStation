@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+<?php
+session_start();
+if (!isset($_SESSION["username"])) {
+    header("Location: /login.php?index");
+}
+?>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Домашняя метеостанция - Главная</title>
@@ -26,6 +32,14 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/setup.php">Настройки</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $_SESSION["username"] ?>&nbsp;<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/user.php">Личный кабинет</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/logout.php">Выход</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

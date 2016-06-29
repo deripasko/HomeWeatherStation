@@ -4,27 +4,13 @@ var registerController = function(params) {
     var userNameField = null;
     var passwordField = null;
     var btnRegister = null;
-    var btnValidate = null;
     var errorPane = null;
-    var codePanel = null;
-    var codeField = null;
-    var validationPanel = null;
-    var usernamePanel = null;
-    var passwordPanel = null;
-    var registerPanel = null;
 
     function initData() {
         userNameField = ge("username");
         passwordField = ge("password");
         btnRegister = ge("btnRegister");
-        btnValidate = ge("btnValidate");
         errorPane = ge("errorPane");
-        codePanel = ge("codePanel");
-        codeField = ge("code");
-        validationPanel = ge("validationPanel");
-        usernamePanel = ge("usernamePanel");
-        passwordPanel = ge("passwordPanel");
-        registerPanel = ge("registerPanel");
     }
 
     function disableForm(disable) {
@@ -81,22 +67,11 @@ var registerController = function(params) {
         queryHelper.requestUserData({ action: "register", email: email, password: password }, registerUserCallback);
     }
 
-    function switchToValidationMode() {
-        codePanel.style.display = "";
-        codeField.focus();
-
-        validationPanel.style.display = "";
-        usernamePanel.style.display = passwordPanel.style.display = registerPanel.style.display = "none";
-
-        btnRegister.type = "button";
-    }
-
     function registerUserCallback(payload) {
         errorPane.style.visibility = "visible";
 
         if (payload.result === true) {
-            errorPane.innerHTML = "На указанный e-mail отправлен проверочный код. Введите полученный код для окончания регистрации.";
-            switchToValidationMode();
+            errorPane.innerHTML = "На указанный e-mail отправлен проверочный код. Введите его в личном кабинете пользователя в течение трёх дней для окончания регистрации. Для продолжения работы перейдите на страницу <b><a href='/login.php'>входа</a></b>.";
         } else {
             disableForm(false);
             if (payload.alreadyRegistered) {
@@ -107,7 +82,7 @@ var registerController = function(params) {
         }
     }
 
-    function doLogin(evt) {
+    function doRegister(evt) {
         EventHelper.cancel(evt);
         if (validateForm(evt)) {
             disableForm(true);
@@ -115,34 +90,10 @@ var registerController = function(params) {
         }
     }
 
-    function validateCode(evt) {
-        EventHelper.cancel(evt);
-
-        var code = codeField.value;
-        if (isStringEmpty(code)) {
-            errorPane.innerHTML = "Введите проверочный код.";
-            codeField.focus();
-            return;
-        }
-
-        queryHelper.requestUserData({ action: "validate", code: code }, validateUserCallback);
-    }
-
-    function validateUserCallback(payload) {
-
-    }
-
     function init() {
         initData();
-
-        if (!isStringEmpty(codeField.value)) {
-            switchToValidationMode();
-        } else {
-            userNameField.focus();
-        }
-
-        btnRegister.onclick = doLogin;
-        btnValidate.onclick = validateCode;
+        userNameField.focus();
+        btnRegister.onclick = doRegister;
     }
 
     init();

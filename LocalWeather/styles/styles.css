@@ -114,6 +114,23 @@ hr {
     margin-top: 7px;
 }
 
+.navbar-default .navbar-nav>.open>a {
+    background: #3D3F48 !important;
+}
+
+.dropdown-menu {
+    background: #2E3139 !important;
+}
+
+.dropdown-menu>li>a {
+    color: #c0c4c8 !important;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+    background: #3D3F48 !important;
+}
+
 /* end bootstrap override */
 
 .pageContainer {

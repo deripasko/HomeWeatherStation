@@ -28,8 +28,18 @@ if ($action == "register") {
     }
 }
 
+if ($action == "login") {
+    $email = $_REQUEST["email"];
+    $password = $_REQUEST["password"];
+
+    $result = $requester->loginUser($email, $password);
+    $allData->result = $result;
+}
+
 if ($action == "validate") {
     $code = $_REQUEST["code"];
+    $requester->validateUser($code);
+    $allData = $requester->getData("SELECT IsActive FROM WeatherUser WHERE VerificationCode = '$code'");
 }
 
 print json_encode($allData, JSON_UNESCAPED_UNICODE);
