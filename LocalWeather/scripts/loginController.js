@@ -5,12 +5,14 @@ var loginController = function(params) {
     var passwordField = null;
     var btnLogin = null;
     var errorPane = null;
+    var rememberme = null;
 
     function initData() {
         userNameField = ge("username");
         passwordField = ge("password");
         btnLogin = ge("btnLogin");
         errorPane = ge("errorPane");
+        rememberme = ge("rememberme");
     }
 
     function disableForm(disable) {
@@ -72,12 +74,18 @@ var loginController = function(params) {
     function loginUser() {
         var email = userNameField.value;
         var password = passwordField.value;
-        queryHelper.requestUserData({ action: "login", email: email, password: password }, loginUserCallback);
+        var setCookie = rememberme.checked;
+        queryHelper.requestUserData({
+            action: "login",
+            email: email,
+            password: password,
+            setCookie: setCookie ? 1 : 0
+        }, loginUserCallback);
     }
 
     function loginUserCallback(payload) {
         if (payload.result === true) {
-            document.location = "/index.php";
+            document.location = "/";
         } else {
             disableForm(false);
             errorPane.innerHTML = "Введены неверные e-mail и/или пароль.";

@@ -268,7 +268,7 @@ class Requester
         return $id;
     }
 
-    public function loginUser($email, $password) {
+    public function loginUser($email, $password, $setCookie) {
 
         global $databaseHost;
         global $databaseName;
@@ -295,6 +295,9 @@ class Requester
 
         if ($result) {
             $_SESSION["username"] = $databaseUserName;
+            if ($setCookie == 1) {
+                setcookie("username", $databaseUserName, strtotime('+1 year'));
+            }
         }
 
         mysql_close($link);

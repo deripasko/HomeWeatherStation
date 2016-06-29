@@ -26,12 +26,12 @@ if (!isset($_SESSION["username"])) {
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="/">Главная</a></li>
-                <li><a href="/datas.php">Данные</a></li>
-                <li><a href="/charts.php">Графики</a></li>
+                <li class="active"><a href="/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>&nbsp;&nbsp;Главная</a></li>
+                <li><a href="/datas.php"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>&nbsp;&nbsp;Данные</a></li>
+                <li><a href="/charts.php"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span>&nbsp;&nbsp;Графики</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/setup.php">Настройки</a></li>
+                <li><a href="/setup.php"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;&nbsp;Настройки</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $_SESSION["username"] ?>&nbsp;<span class="caret"></span></a>
                     <ul class="dropdown-menu">

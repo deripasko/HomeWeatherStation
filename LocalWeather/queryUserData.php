@@ -31,8 +31,9 @@ if ($action == "register") {
 if ($action == "login") {
     $email = $_REQUEST["email"];
     $password = $_REQUEST["password"];
+    $setCookie = $_REQUEST["setCookie"];
 
-    $result = $requester->loginUser($email, $password);
+    $result = $requester->loginUser($email, $password, $setCookie);
     $allData->result = $result;
 }
 

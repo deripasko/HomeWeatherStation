@@ -2,6 +2,11 @@
 session_start();
 session_unset();
 session_destroy();
+
+if (isset($_COOKIE['username'])) {
+    unset($_COOKIE['username']);
+    setcookie('username', null, -1, '/');
+}
 ?>
 <!DOCTYPE html>
 <html>
