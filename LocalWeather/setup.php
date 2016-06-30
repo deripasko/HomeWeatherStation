@@ -39,6 +39,8 @@ if (!isset($_SESSION["username"])) {
                         </div>
                     </div>
                 </div>
+                <hr/>
+                <div id="sensorsList"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" id="btnSaveModule">Сохранить</button>

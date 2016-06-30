@@ -53,4 +53,9 @@ var queryHelper = new function() {
         request("queryUserData.php", params, callback);
     }
     thisRef.requestUserData = requestUserData;
+
+    function requestData(params, callback) {
+        request("queryData.php", params, callback);
+    }
+    thisRef.requestData = requestData;
 };
