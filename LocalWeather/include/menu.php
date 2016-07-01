@@ -4,6 +4,7 @@ $isIndex = $uri == "/" || strpos($uri, "index.php") !== false;
 $isDatas = strpos($uri, "datas.php") !== false;
 $isCharts = strpos($uri, "charts.php") !== false;
 $isSetup = strpos($uri, "setup.php") !== false;
+$isUser = strpos($uri, "user.php") !== false;
 ?>
 <nav class="navbar navbar-default">
     <div class="container-fluid">
@@ -25,7 +26,7 @@ $isSetup = strpos($uri, "setup.php") !== false;
             <ul class="nav navbar-nav navbar-right">
                 <li <?php echo($isSetup ? "class='active'" : ""); ?>><a href="/setup.php"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;&nbsp;Настройки</a></li>
                 <?php if ($publicServer) { ?>
-                <li class="dropdown">
+                <li <?php echo($isUser ? "class='active dropdown'" : "class='dropdown'"); ?>>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;<?php echo $_SESSION["username"] ?>&nbsp;<span class="caret"></span>
                     </a>
