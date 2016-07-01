@@ -2,6 +2,16 @@
 
 //update Module data in database
 
+include_once("siteConfig.php");
+session_start();
+
+if ($publicServer) {
+    if (!isset($_SESSION["username"])) {
+        exit();
+        return;
+    }
+}
+
 include_once("requester.php");
 
 $mac = $_REQUEST["mac"];

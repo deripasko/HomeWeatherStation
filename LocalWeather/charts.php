@@ -1,8 +1,13 @@
 <?php
+
+include_once("siteConfig.php");
 session_start();
-if (!isset($_SESSION["username"])) {
-    header("Location: /login.php?charts");
+if ($publicServer) {
+    if (!isset($_SESSION["username"])) {
+        header("Location: /login.php?charts");
+    }
 }
+
 ?>
 <!DOCTYPE html>
 <html>

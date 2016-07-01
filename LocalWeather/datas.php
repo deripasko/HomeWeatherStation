@@ -1,8 +1,14 @@
 <?php
+
+include_once("siteConfig.php");
 session_start();
-if (!isset($_SESSION["username"])) {
-    header("Location: /login.php?datas");
+
+if ($publicServer) {
+    if (!isset($_SESSION["username"])) {
+        header("Location: /login.php?datas");
+    }
 }
+
 ?>
 <!DOCTYPE html>
 <html>

@@ -1,5 +1,13 @@
 <?php
+
+include_once("siteConfig.php");
 session_start();
+
+if (!$publicServer) {
+    header("Location: /");
+    exit();
+}
+
 session_unset();
 session_destroy();
 

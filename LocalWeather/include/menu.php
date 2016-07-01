@@ -24,6 +24,7 @@ $isSetup = strpos($uri, "setup.php") !== false;
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li <?php echo($isSetup ? "class='active'" : ""); ?>><a href="/setup.php"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;&nbsp;Настройки</a></li>
+                <?php if ($publicServer) { ?>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;<?php echo $_SESSION["username"] ?>&nbsp;<span class="caret"></span>
@@ -34,6 +35,7 @@ $isSetup = strpos($uri, "setup.php") !== false;
                         <li><a href="/logout.php">Выход</a></li>
                     </ul>
                 </li>
+                <?php } ?>
             </ul>
         </div>
     </div>

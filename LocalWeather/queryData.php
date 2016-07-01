@@ -2,6 +2,16 @@
 
 //request data from database
 
+include_once("siteConfig.php");
+session_start();
+
+if ($publicServer) {
+    if (!isset($_SESSION["username"])) {
+        exit();
+        return;
+    }
+}
+
 include_once("requester.php");
 
 $getSensors = (int)$_REQUEST["getSensors"] == 1;

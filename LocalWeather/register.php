@@ -1,3 +1,13 @@
+<?php
+
+include_once("siteConfig.php");
+session_start();
+
+if (!$publicServer || isset($_SESSION["username"])) {
+    header("Location: /");
+}
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
