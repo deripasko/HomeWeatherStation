@@ -1,11 +1,3 @@
-<?php
-
-$code = $_REQUEST["code"];
-if (isset($code)) {
-
-}
-
-?>
 <!DOCTYPE html>
 <html>
 <head>
