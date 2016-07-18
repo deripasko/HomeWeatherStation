@@ -2,6 +2,12 @@
 
 //request User data from database
 
+include_once("siteConfig.php");
+
+if ($publicServer) {
+    session_start();
+}
+
 include_once("requester.php");
 
 $action = $_REQUEST["action"];

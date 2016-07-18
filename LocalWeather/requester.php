@@ -1,6 +1,7 @@
 <?php
 
-session_start();
+if ($publicServer)
+    session_start();
 
 include_once("dbconfig.php");
 include_once("emailConfig.php");
@@ -93,7 +94,7 @@ class Requester
                 }
                 else {
                     if ($columnType == "string" || $columnType == "blob")
-                        $sensorData->$columnName = iconv('windows-1251', 'utf-8', $col_value);
+                        $sensorData->$columnName = $col_value; //iconv('windows-1251', 'utf-8', $col_value);
                     if ($columnType == "real")
                         $sensorData->$columnName = (float)$col_value;
                     if ($columnType == "int")
@@ -119,6 +120,12 @@ class Requester
 
         $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
             or die("Could not connect : " . mysql_error());
+
+        mysql_query("SET CHARACTER SET 'utf8'", $link);
+        mysql_query("SET character_set_client = 'utf8'");
+        mysql_query("SET character_set_results = 'utf8'");
+        mysql_query("SET collation_connection = 'utf8_general_ci'");
+        mysql_query("SET NAMES utf8");
 
         mysql_select_db($databaseName)
             or die("Could not select database");

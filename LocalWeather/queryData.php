@@ -3,9 +3,10 @@
 //request data from database
 
 include_once("siteConfig.php");
-session_start();
 
 if ($publicServer) {
+    session_start();
+
     if (!isset($_SESSION["username"])) {
         exit();
         return;
@@ -14,9 +15,9 @@ if ($publicServer) {
 
 include_once("requester.php");
 
-$getSensors = (int)$_REQUEST["getSensors"] == 1;
-$getModules = (int)$_REQUEST["getModules"] == 1;
-$getWeather = (int)$_REQUEST["getWeather"] == 1;
+$getSensors = (isset($_REQUEST["getSensors"]) ? (int)$_REQUEST["getSensors"] : 0) == 1;
+$getModules = (isset($_REQUEST["getModules"]) ? (int)$_REQUEST["getModules"] : 0) == 1;
+$getWeather = (isset($_REQUEST["getWeather"]) ? (int)$_REQUEST["getWeather"] : 0) == 1;
 
 $allData = (object) [];
 
@@ -26,9 +27,9 @@ if ($getSensors) {
     $allData->sensors = $requester->getData("SELECT * FROM WeatherSensor ORDER BY SortOrder");
 }
 
-if ($getSensors) {
+if ($getModules) {
 
-    $sortBy = $_REQUEST["modulesSortBy"];
+    $sortBy = (isset($_REQUEST["modulesSortBy"])) ? $_REQUEST["modulesSortBy"] : null;
     $sortClause = "";
     if (isset($sortBy)) {
         $sortClause = " ORDER BY $sortBy";
@@ -39,12 +40,15 @@ if ($getSensors) {
 
 if ($getWeather) {
 
-    $sortBy = $_REQUEST["sortBy"];
-    $sortAscending = ($_REQUEST["sortAscending"] == "true") ? "ASC" : "DESC";
-    $pageIndex = (int)$_REQUEST["pageIndex"];
-    $pageSize = (int)$_REQUEST["pageSize"];
+    $interval = "";
+
+    $sortBy = isset($_REQUEST["sortBy"]) ? $_REQUEST["sortBy"] : "ID";
+    $sortAscending = isset($_REQUEST["sortAscending"]) ? (($_REQUEST["sortAscending"] == "true") ? "ASC" : "DESC") : "ASC";
+    $pageIndex = isset($_REQUEST["pageIndex"]) ? (int)$_REQUEST["pageIndex"] : 0;
+    $pageSize = isset($_REQUEST["pageSize"]) ? (int)$_REQUEST["pageSize"] : 20;
     $queryType = $_REQUEST["queryType"];
-    $interval = $_REQUEST["interval"];
+    if ($queryType != "all")
+        $interval = $_REQUEST["interval"];
     $filteredMacs = $_REQUEST["filteredMacs"];
 
     $params = (object) [];

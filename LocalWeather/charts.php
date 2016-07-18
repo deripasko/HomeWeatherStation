@@ -59,8 +59,8 @@ if ($publicServer) {
         </div>
     </div>
 
-    <div id="chartsContainer">
-    </div>
+    <div id="chartsContainer"></div>
+    <p class="jumboMessage" id="jumboMessage">Здесь будут отображаться графики с данными с модулей, подключенных к Домашней метеостанции.</p>
 
 </div>
 

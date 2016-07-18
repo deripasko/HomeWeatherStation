@@ -133,9 +133,17 @@ hr {
 
 /* end bootstrap override */
 
+.orange {
+    color: #F6A821 !important;
+}
+
 .pageContainer {
     padding-left: 20px;
     padding-right: 20px;
+}
+
+.userPageContainer {
+    width: 700px;
 }
 
 .fieldsContainer {
