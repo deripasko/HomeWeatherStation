@@ -39,25 +39,24 @@ class Requester
         global $databaseLogin;
         global $databasePassword;
 
-        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
-            or die("Could not connect : " . mysql_error());
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
 
-        mysql_select_db($databaseName)
-            or die("Could not select database");
+        mysqli_query($link, $query);
 
-        mysql_query($query);
-
-        mysql_close($link);
+        mysqli_close($link);
     }
 
     private function getFieldsArray($result) {
 
         $fieldsArray = array();
-        $i = 0;
+        $fieldInfo = mysqli_fetch_fields($result);
 
-        while ($i < mysql_num_fields($result))
+        foreach ($fieldInfo as $meta)
         {
-            $meta = mysql_fetch_field($result, $i);
             if (!$meta)
             {
             }
@@ -69,7 +68,6 @@ class Requester
                 );
                 array_push($fieldsArray, $metaData);
             }
-            $i++;
         }
 
         return $fieldsArray;
@@ -79,10 +77,11 @@ class Requester
 
         $dataArray = array();
 
-        while ($line = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($line = mysqli_fetch_assoc($result))
         {
             $sensorData = (object)[];
             $i = 0;
+
             foreach ($line as $col_value)
             {
                 $columnName = $fieldsArray[$i]["name"];
@@ -118,20 +117,19 @@ class Requester
         global $databaseLogin;
         global $databasePassword;
 
-        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
-            or die("Could not connect : " . mysql_error());
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
 
-        mysql_query("SET CHARACTER SET 'utf8'", $link);
-        mysql_query("SET character_set_client = 'utf8'");
-        mysql_query("SET character_set_results = 'utf8'");
-        mysql_query("SET collation_connection = 'utf8_general_ci'");
-        mysql_query("SET NAMES utf8");
+        mysqli_query($link, "SET CHARACTER SET 'utf8'");
+        mysqli_query($link, "SET character_set_client = 'utf8'");
+        mysqli_query($link, "SET character_set_results = 'utf8'");
+        mysqli_query($link, "SET collation_connection = 'utf8_general_ci'");
+        mysqli_query($link, "SET NAMES utf8");
 
-        mysql_select_db($databaseName)
-            or die("Could not select database");
-
-        $result = mysql_query($query)
-            or die("Query failed: " . mysql_error());
+        $result = mysqli_query($link, $query);
 
         $fieldsArray = $this->getFieldsArray($result);
         $dataArray = $this->getDataArray($result, $fieldsArray);
@@ -141,8 +139,8 @@ class Requester
             "data" => $dataArray
         );
 
-        mysql_free_result($result);
-        mysql_close($link);
+        mysqli_free_result($result);
+        mysqli_close($link);
 
         return $allData;
     }
@@ -154,11 +152,11 @@ class Requester
         global $databaseLogin;
         global $databasePassword;
 
-        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
-            or die("Could not connect : " . mysql_error());
-
-        mysql_select_db($databaseName)
-            or die("Could not select database");
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
 
         $macFilter = "1 = 1";
         if ($params->filteredMacs != "") {
@@ -180,19 +178,16 @@ class Requester
             $query = "SELECT wd.* FROM WeatherData wd WHERE DATE_SUB(NOW(), INTERVAL $params->interval) < MeasuredDateTime AND $macFilter";
         }
 
+        $result = mysqli_query($link, $query);
+
         $queryRowsCount = "SELECT FOUND_ROWS()";
-
-        $result = mysql_query($query)
-            or die("Query failed: " . mysql_error());
-
-        $resultRowsCount = mysql_query($queryRowsCount)
-            or die("Query failed: " . mysql_error());
+        $resultRowsCount = mysqli_query($link, $queryRowsCount);
 
         $fieldsArray = $this->getFieldsArray($result);
         $dataArray = $this->getDataArray($result, $fieldsArray);
 
         $rowsCount = 0;
-        while ($line = mysql_fetch_array($resultRowsCount, MYSQL_ASSOC))
+        while ($line = mysqli_fetch_assoc($resultRowsCount))
         {
             foreach ($line as $col_value)
             {
@@ -212,8 +207,8 @@ class Requester
             "rowsCount" => (int)$rowsCount
         );
 
-        mysql_free_result($result);
-        mysql_close($link);
+        mysqli_free_result($result);
+        mysqli_close($link);
 
         return $allData;
     }
@@ -225,22 +220,20 @@ class Requester
         global $databaseLogin;
         global $databasePassword;
 
-        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
-            or die("Could not connect : " . mysql_error());
-
-        mysql_select_db($databaseName)
-            or die("Could not select database");
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
 
         $email = trim($email);
         $query = "SELECT ID FROM WeatherUser WHERE LOWER(Email) = LOWER('$email')";
 
-        $result = mysql_query($query)
-            or die("Query failed: " . mysql_error());
+        $result = mysqli_query($link, $query);
+        $count = mysqli_num_rows($result);
 
-        $count = mysql_num_rows($result);
-
-        mysql_free_result($result);
-        mysql_close($link);
+        mysqli_free_result($result);
+        mysqli_close($link);
 
         return $count;
     }
@@ -252,22 +245,21 @@ class Requester
         global $databaseLogin;
         global $databasePassword;
 
-        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
-            or die("Could not connect : " . mysql_error());
-
-        mysql_select_db($databaseName)
-            or die("Could not select database");
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
 
         $email = trim($email);
         $password = password_hash(trim($password), PASSWORD_DEFAULT);
         $code = substr(str_replace("-", "", trim($this->getGUID(), "{}")), 0, 16);
 
         $query = "INSERT INTO WeatherUser (UserName, Email, Password, VerificationCode) VALUES (LOWER('$email'), LOWER('$email'), '$password', UPPER('$code'))";
-        mysql_query($query)
-            or die("Query failed: " . mysql_error());
+        mysqli_query($link, $query);
 
-        $id = mysql_insert_id();
-        mysql_close($link);
+        $id = mysqli_insert_id($link);
+        mysqli_close($link);
 
         $this->sendEmail($email, "Регистрация на сайте Домашней метеостанции",
             "Для окончания регистрации введите проверочный код<br/><b>$code</b><br/>в личном кабинете пользователя в течение трёх дней.");
@@ -282,20 +274,19 @@ class Requester
         global $databaseLogin;
         global $databasePassword;
 
-        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
-            or die("Could not connect : " . mysql_error());
-
-        mysql_select_db($databaseName)
-            or die("Could not select database");
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
 
         $email = trim($email);
         $password = trim($password);
 
         $query = "SELECT Password, UserName FROM WeatherUser WHERE LOWER('$email') = LOWER(Email)";
-        $result = mysql_query($query)
-            or die("Query failed: " . mysql_error());
+        $result = mysqli_query($link, $query);
 
-        $line = mysql_fetch_row($result);
+        $line = mysqli_fetch_row($result);
         $databasePassword = $line[0];
         $databaseUserName = $line[1];
         $result = password_verify($password, $databasePassword);
@@ -307,7 +298,7 @@ class Requester
             }
         }
 
-        mysql_close($link);
+        mysqli_close($link);
 
         return $result;
     }
@@ -319,17 +310,16 @@ class Requester
         global $databaseLogin;
         global $databasePassword;
 
-        $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword)
-            or die("Could not connect : " . mysql_error());
-
-        mysql_select_db($databaseName)
-            or die("Could not select database");
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
 
         $query = "UPDATE WeatherUser SET IsActive = 1, VerifiedDateTime = CURRENT_TIMESTAMP WHERE VerificationCode = '$code'";
-        mysql_query($query)
-            or die("Query failed: " . mysql_error());
+        mysqli_query($link, $query);
 
-        mysql_close($link);
+        mysqli_close($link);
     }
 
     private function sendEmail($to, $subject, $text) {
