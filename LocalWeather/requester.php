@@ -11,6 +11,20 @@ require 'lib/PHPMailer/PHPMailerAutoload.php';
 
 class Requester
 {
+    public static function h_type2txt($type_id)
+    {
+        static $types;
+
+        if (!isset($types))
+        {
+            $types = array();
+            $constants = get_defined_constants(true);
+            foreach ($constants['mysqli'] as $c => $n) if (preg_match('/^MYSQLI_TYPE_(.*)/', $c, $m)) $types[$n] = $m[1];
+        }
+
+        return array_key_exists($type_id, $types)? $types[$type_id] : NULL;
+    }
+
     private function getGUID() {
 
         if (function_exists('com_create_guid')){
@@ -64,7 +78,7 @@ class Requester
             {
                 $metaData = array(
                     "name" => $meta->name,
-                    "type" => $meta->type
+                    "type" => $this->h_type2txt($meta->type)
                 );
                 array_push($fieldsArray, $metaData);
             }
@@ -92,13 +106,13 @@ class Requester
                     $sensorData->$columnName = null;
                 }
                 else {
-                    if ($columnType == "string" || $columnType == "blob")
+                    if ($columnType == "VAR_STRING" || $columnType == "BLOB")
                         $sensorData->$columnName = $col_value; //iconv('windows-1251', 'utf-8', $col_value);
-                    if ($columnType == "real")
+                    if ($columnType == "FLOAT")
                         $sensorData->$columnName = (float)$col_value;
-                    if ($columnType == "int")
+                    if ($columnType == "LONG" || $columnType == "BIT")
                         $sensorData->$columnName = (int)$col_value;
-                    if ($columnType == "timestamp")
+                    if ($columnType == "TIMESTAMP")
                         $sensorData->$columnName = $col_value;
                 }
 
