@@ -28,7 +28,8 @@ if (isset($_REQUEST["tableVisibility"])) {
     $requester->updateData("UPDATE WeatherSensor SET TableVisibility = $tableVisibility WHERE ID = $id");
 }
 
-$allData = $requester->getData("SELECT * FROM WeatherSensor");
+$allData = (object) [];
+$allData->sensors = $requester->getData("SELECT * FROM WeatherSensor");
 
 print json_encode($allData, JSON_UNESCAPED_UNICODE);
 
