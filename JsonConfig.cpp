@@ -17,7 +17,8 @@ bool JsonConfig::printConfig()
     Serial.print(F("get_data_delay: "));   Serial.println(get_data_delay);
     Serial.print(F("reboot_delay  : "));   Serial.println(reboot_delay);
 
-    Serial.print(F("add_data_url  : "));   Serial.println(add_data_url);
+    Serial.print(F("add_data_url      : "));   Serial.println(add_data_url);
+    Serial.print(F("validation_code   : "));   Serial.println(validation_code);
 
     Serial.print(F("sensor_bmp180_on  : "));   Serial.println(sensor_bmp180_on);
     Serial.print(F("sensor_dht22_on   : "));   Serial.println(sensor_dht22_on);
@@ -90,6 +91,7 @@ bool JsonConfig::loadConfig()
     if (json.containsKey("reboot_delay")) { const char* reboot_delay_char = json["reboot_delay"]; sprintf_P(reboot_delay, ("%s"), reboot_delay_char); }
 
     if (json.containsKey("add_data_url")) { const char* add_data_url_char = json["add_data_url"]; sprintf_P(add_data_url, ("%s"), add_data_url_char); }
+    if (json.containsKey("validation_code")) { const char* validation_code_char = json["validation_code"]; sprintf_P(validation_code, ("%s"), validation_code_char); }
 
     if (json.containsKey("sensor_bmp180_on")) { const char* sensor_bmp180_on_char = json["sensor_bmp180_on"]; sprintf_P(sensor_bmp180_on, ("%s"), sensor_bmp180_on_char); }
     if (json.containsKey("sensor_dht22_on")) { const char* sensor_dht22_on_char = json["sensor_dht22_on"]; sprintf_P(sensor_dht22_on, ("%s"), sensor_dht22_on_char); }
@@ -138,6 +140,7 @@ bool JsonConfig::saveConfig()
     json["reboot_delay"] = reboot_delay;
 
     json["add_data_url"] = add_data_url;
+    json["validation_code"] = validation_code;
 
     json["sensor_bmp180_on"] = sensor_bmp180_on;
     json["sensor_dht22_on"] = sensor_dht22_on;

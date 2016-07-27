@@ -200,6 +200,12 @@ void webSetup()
         payload.toCharArray(config.add_data_url, sizeof(config.add_data_url));
         config_changed = true;
     }
+    payload = WebServer.arg("validation_code");
+    if (payload.length() > 0)
+    {
+        payload.toCharArray(config.validation_code, sizeof(config.validation_code));
+        config_changed = true;
+    }
 
     payload = WebServer.arg("static_ip_mode");
     if (payload.length() > 0)
@@ -230,18 +236,19 @@ void webSetup()
         renderTitle(config.module_name, "Setup") + FPSTR(stylesInclude) + FPSTR(scripts) + FPSTR(headEnd) + FPSTR(bodyStart) + renderMenu(config.reboot_delay) +
         "<h2>Module Setup</h2>" +
         "<div class='container'>" +
-        renderParameterRow("Module ID", "module_id", config.module_id) + 
-        renderParameterRow("Module Name", "module_name", config.module_name) + 
+        renderParameterRow("Module ID", "module_id", config.module_id, 4) + 
+        renderParameterRow("Module Name", "module_name", config.module_name, 32) + 
         "<hr/>" +
-        renderParameterRow("SSID", "sta_ssid", config.sta_ssid) + 
-        renderParameterRow("Password", "sta_pwd", config.sta_pwd, false, true) + 
+        renderParameterRow("SSID", "sta_ssid", config.sta_ssid, 32) + 
+        renderParameterRow("Password", "sta_pwd", config.sta_pwd, 32, false, true) + 
         "<hr/>" +
-        renderParameterRow("Static IP Mode", "static_ip_mode", config.static_ip_mode) + 
-        renderParameterRow("Static IP", "static_ip", config.static_ip) + 
-        renderParameterRow("Gateway", "static_gateway", config.static_gateway) + 
-        renderParameterRow("Subnet", "static_subnet", config.static_subnet) + 
+        renderParameterRow("Static IP Mode", "static_ip_mode", config.static_ip_mode, 1) + 
+        renderParameterRow("Static IP", "static_ip", config.static_ip, 15) + 
+        renderParameterRow("Gateway", "static_gateway", config.static_gateway, 15) + 
+        renderParameterRow("Subnet", "static_subnet", config.static_subnet, 15) + 
         "<hr/>" +
-        renderParameterRow("Add Data URL", "add_data_url", config.add_data_url) + 
+        renderParameterRow("Add Data URL", "add_data_url", config.add_data_url, 200) + 
+        renderParameterRow("Validation Code", "validation_code", config.validation_code, 16) + 
         "<hr/>" +
         "<a class='btn btn-default marginTop0' role='button' onclick='saveFormData(\"/setup\");'>Save</a>" +
         "</div>" +
@@ -316,15 +323,15 @@ void webSensors()
         renderTitle(config.module_name, "Setup") + FPSTR(stylesInclude) + FPSTR(scripts) + FPSTR(headEnd) + FPSTR(bodyStart) + renderMenu(config.reboot_delay) +
         "<h2>Module Sensors</h2>" +
         "<div class='container'>" +
-        renderParameterRow("BMP180 On", "sensor_bmp180_on", config.sensor_bmp180_on) + 
-        renderParameterRow("DHT22 On", "sensor_dht22_on", config.sensor_dht22_on) + 
-        renderParameterRow("SHT21 On", "sensor_sht21_on", config.sensor_sht21_on) + 
-        renderParameterRow("BH1750 On", "sensor_bh1750_on", config.sensor_bh1750_on) + 
-        renderParameterRow("CO2 Sensor On", "sensor_co2_on", config.sensor_co2_on) + 
-        renderParameterRow("BME280 On", "sensor_bme280_on", config.sensor_bme280_on) + 
+        renderParameterRow("BMP180 On", "sensor_bmp180_on", config.sensor_bmp180_on, 1) + 
+        renderParameterRow("DHT22 On", "sensor_dht22_on", config.sensor_dht22_on, 1) + 
+        renderParameterRow("SHT21 On", "sensor_sht21_on", config.sensor_sht21_on, 1) + 
+        renderParameterRow("BH1750 On", "sensor_bh1750_on", config.sensor_bh1750_on, 1) + 
+        renderParameterRow("CO2 Sensor On", "sensor_co2_on", config.sensor_co2_on, 1) + 
+        renderParameterRow("BME280 On", "sensor_bme280_on", config.sensor_bme280_on, 1) + 
         "<hr/>" +
-        renderParameterRow("Reboot Delay, sec", "reboot_delay", config.reboot_delay) + 
-        renderParameterRow("Sensors Delay, sec", "get_data_delay", config.get_data_delay) + 
+        renderParameterRow("Reboot Delay, sec", "reboot_delay", config.reboot_delay, 3) + 
+        renderParameterRow("Sensors Delay, sec", "get_data_delay", config.get_data_delay, 3) + 
         "<hr/>" +
         "<a class='btn btn-default marginTop0' role='button' onclick='saveFormData(\"/sensors\");'>Save</a>" +
         "</div>" +
@@ -454,18 +461,18 @@ void webTime()
         renderTitle(config.module_name, "Setup Time") + FPSTR(stylesInclude) + FPSTR(scripts) + FPSTR(headEnd) + FPSTR(bodyStart) + renderMenu(config.reboot_delay) +
         "<h2>Module Time</h2>" +
         "<div class='container'>" +
-        renderParameterRow("RTC On", "rtc_on", config.rtc_on, false) + 
-        renderParameterRow("Use Server Time", "use_server_time", config.use_server_time) + 
-        renderParameterRow("Use NTP Server", "use_ntp_server", config.use_ntp_server) + 
-        renderParameterRow("NTP Server", "ntp_server", config.ntp_server) + 
-        renderParameterRow("Timezone Offset", "time_zone_offset", config.time_zone_offset) + 
+        renderParameterRow("RTC On", "rtc_on", config.rtc_on, 1) + 
+        renderParameterRow("Use Server Time", "use_server_time", config.use_server_time, 1) + 
+        renderParameterRow("Use NTP Server", "use_ntp_server", config.use_ntp_server, 1) + 
+        renderParameterRow("NTP Server", "ntp_server", config.ntp_server, 200) + 
+        renderParameterRow("Timezone Offset", "time_zone_offset", config.time_zone_offset, 3) + 
         "<hr/>" +
-        renderParameterRow("Year", "year", String(years)) + 
-        renderParameterRow("Month", "month", String(months)) + 
-        renderParameterRow("Day", "day", String(days)) + 
-        renderParameterRow("Hour", "hour", String(hours)) + 
-        renderParameterRow("Minute", "minute", String(minutes)) + 
-        renderParameterRow("Second", "second", String(seconds)) + 
+        renderParameterRow("Year", "year", String(years), 4) + 
+        renderParameterRow("Month", "month", String(months), 2) + 
+        renderParameterRow("Day", "day", String(days), 2) + 
+        renderParameterRow("Hour", "hour", String(hours), 2) + 
+        renderParameterRow("Minute", "minute", String(minutes), 2) + 
+        renderParameterRow("Second", "second", String(seconds), 2) + 
         "<hr/>" +
         "<a class='btn btn-default marginTop0' role='button' onclick='saveFormData(\"/time\");'>Save</a>" +
         "</div>" +
@@ -1139,6 +1146,7 @@ String getSensorsDataJson()
 
     json["moduleid"] = atoi(config.module_id);
     json["modulename"] = config.module_name;
+    json["code"] = config.validation_code;
 
     if (atoi(config.sensor_dht22_on) == 1)
     {

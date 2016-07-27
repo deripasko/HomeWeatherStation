@@ -31,6 +31,7 @@ $object = json_decode($input, true);
 
 $moduleid = (int)getParam($object, "moduleid");
 $modulename = getParam($object, "modulename");
+$code = getParam($object, "code");
 
 $ip = getParam($object, "ip");
 $mac = getParam($object, "mac");
@@ -94,10 +95,10 @@ try {
     mysql_free_result($result);
 
     if ($moduleExists) {
-        $sql = "UPDATE WeatherModule SET IP = '$ip', ModuleName = '$modulename', ModuleID = $moduleid, SensorDelay = $delay, LastSeenDateTime = CURRENT_TIMESTAMP WHERE MAC = '$mac'";
+        $sql = "UPDATE WeatherModule SET IP = '$ip', ModuleName = '$modulename', ModuleID = $moduleid, ValidationCode = '$code', SensorDelay = $delay, LastSeenDateTime = CURRENT_TIMESTAMP WHERE MAC = '$mac'";
         mysql_query($sql);
     } else {
-        $sql = "INSERT INTO WeatherModule (ModuleID, ModuleName, IP, MAC, SensorDelay) VALUES ($moduleid, '$modulename', '$ip', '$mac', $delay)";
+        $sql = "INSERT INTO WeatherModule (ModuleID, ModuleName, IP, MAC, SensorDelay, ValidationCode) VALUES ($moduleid, '$modulename', '$ip', '$mac', $delay, '$code')";
         mysql_query($sql);
     }
 } catch (Exception $e) {

@@ -143,7 +143,7 @@ const char headEnd[] PROGMEM = "</head>";
 const char bodyStart[] PROGMEM = "<body>";
 const char bodyEnd[] PROGMEM = "</body></html>";
 
-String renderParameterRow(String paramName, String paramId, String paramValue, bool isReadonly = false, bool isPassword = false);
+String renderParameterRow(String paramName, String paramId, String paramValue, int maxLength, bool isReadonly = false, bool isPassword = false);
 String renderTitle(String pageName, String moduleName);
 String renderAlert(String type, String text);
 String renderStyles(String styles);
