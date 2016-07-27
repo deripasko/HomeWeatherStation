@@ -3,13 +3,13 @@
 //request data from database
 
 include_once("siteConfig.php");
+include_once("include/common.php");
+
+session_start();
 
 if ($publicServer) {
-    session_start();
-
-    if (!isset($_SESSION["username"])) {
+    if (!checkUser()) {
         exit();
-        return;
     }
 }
 

@@ -1,11 +1,14 @@
 <?php
 
 include_once("siteConfig.php");
+include_once("include/common.php");
+
 session_start();
 
 if ($publicServer) {
-    if (!isset($_SESSION["username"])) {
+    if (!checkUser()) {
         header("Location: /login.php?index");
+        exit();
     }
 }
 

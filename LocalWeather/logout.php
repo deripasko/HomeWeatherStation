@@ -4,7 +4,7 @@ include_once("siteConfig.php");
 session_start();
 
 if (!$publicServer) {
-    header("Location: /");
+    header("Location: index.php");
     exit();
 }
 

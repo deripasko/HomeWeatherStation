@@ -1,11 +1,14 @@
 <?php
 
 include_once("siteConfig.php");
+include_once("include/common.php");
+
 session_start();
 
 if ($publicServer) {
-    if (!isset($_SESSION["username"])) {
+    if (!checkUser()) {
         header("Location: /login.php?user");
+        exit();
     }
 }
 
@@ -13,7 +16,7 @@ if ($publicServer) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Домашняя метеостанция - Главная</title>
+    <title>Домашняя метеостанция - Личный кабинет</title>
     <?php include_once("include/header.php"); ?>
     <script src="scripts/userController.js" type="text/javascript"></script>
 </head>

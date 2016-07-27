@@ -308,7 +308,10 @@ class Requester
         if ($result) {
             $_SESSION["username"] = $databaseUserName;
             if ($setCookie == 1) {
-                setcookie("username", $databaseUserName, strtotime('+1 year'));
+                $ip = $_SERVER['REMOTE_ADDR'];
+                $cookieValue = $databaseUserName . $ip;
+                $cookieHash = password_hash(trim($cookieValue), PASSWORD_DEFAULT);
+                setcookie("username", $cookieHash, strtotime('+1 year'));
             }
         }
 
@@ -334,6 +337,43 @@ class Requester
         mysqli_query($link, $query);
 
         mysqli_close($link);
+    }
+
+    public function validateCookie($cookieHash) {
+
+        global $databaseHost;
+        global $databaseName;
+        global $databaseLogin;
+        global $databasePassword;
+
+        $validationResult = false;
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
+
+        $query = "SELECT UserName from WeatherUser";
+        $result = mysqli_query($link, $query);
+
+        while ($line = mysqli_fetch_assoc($result))
+        {
+            $databaseUserName = $line["UserName"];
+            $cookieValue = $databaseUserName . $ip;
+
+            $verifyResult = password_verify($cookieValue, $cookieHash);
+            if ($verifyResult) {
+                $_SESSION["username"] = $databaseUserName;
+                $validationResult = true;
+                break;
+            }
+        }
+
+        mysqli_close($link);
+
+        return $validationResult;
     }
 
     private function sendEmail($to, $subject, $text) {
