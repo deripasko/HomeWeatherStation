@@ -35,8 +35,13 @@ if ($getModules) {
     if (isset($sortBy)) {
         $sortClause = " ORDER BY $sortBy";
     }
+    $whereClause = "";
+    if ($publicServer) {
+        $whereClause = "WHERE ValidationCode = '" . $_SESSION[$userSessionVarName]->verificationCode . "'";
+    }
 
-    $allData->modules = $requester->getData("SELECT * FROM WeatherModule $sortClause");
+    $query = "SELECT * FROM WeatherModule $whereClause $sortClause";
+    $allData->modules = $requester->getData($query);
 }
 
 if ($getWeather) {

@@ -276,7 +276,7 @@ class Requester
         mysqli_close($link);
 
         $this->sendEmail($email, "Регистрация на сайте Домашней метеостанции",
-            "Для окончания регистрации введите проверочный код<br/><b>$code</b><br/>в личном кабинете пользователя в течение трёх дней.");
+            "Для окончания регистрации введите код валидации<br/><b>$code</b><br/>в личном кабинете пользователя в течение трёх дней.");
 
         return $id;
     }
@@ -287,6 +287,7 @@ class Requester
         global $databaseName;
         global $databaseLogin;
         global $databasePassword;
+        global $userSessionVarName;
 
         $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
         if (mysqli_connect_errno() != 0)
@@ -314,7 +315,7 @@ class Requester
             $query = "UPDATE WeatherUser SET LastLoginDateTime = CURRENT_TIMESTAMP WHERE LOWER('$email') = LOWER(Email)";
             mysqli_query($link, $query);
 
-            $_SESSION["user"] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
+            $_SESSION[$userSessionVarName] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
 
             if ($setCookie == 1) {
                 $ip = $_SERVER['REMOTE_ADDR'];
@@ -335,6 +336,7 @@ class Requester
         global $databaseName;
         global $databaseLogin;
         global $databasePassword;
+        global $userSessionVarName;
 
         $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
         if (mysqli_connect_errno() != 0)
@@ -345,13 +347,13 @@ class Requester
         $query = "UPDATE WeatherUser SET IsActive = 1, VerifiedDateTime = CURRENT_TIMESTAMP WHERE VerificationCode = '$code'";
         mysqli_query($link, $query);
 
-        $query = "SELECT IsActive from WeatherUser WHERE UserName = '" . $_SESSION["user"]->userName . "'";
+        $query = "SELECT IsActive from WeatherUser WHERE UserName = '" . $_SESSION[$userSessionVarName]->userName . "'";
         $result = mysqli_query($link, $query);
 
         while ($line = mysqli_fetch_assoc($result))
         {
             $databaseIsActive = $line["IsActive"];
-            $_SESSION["user"]->isActive = $databaseIsActive;
+            $_SESSION[$userSessionVarName]->isActive = $databaseIsActive;
         }
 
         mysqli_close($link);
@@ -372,6 +374,7 @@ class Requester
         global $databaseName;
         global $databaseLogin;
         global $databasePassword;
+        global $userSessionVarName;
 
         $validationResult = false;
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -396,7 +399,7 @@ class Requester
 
             $verifyResult = password_verify($cookieValue, $cookieHash);
             if ($verifyResult) {
-                $_SESSION["user"] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
+                $_SESSION[$userSessionVarName] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
                 $validationResult = true;
                 break;
             }
