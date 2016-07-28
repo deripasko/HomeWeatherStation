@@ -124,6 +124,30 @@ class Requester
         return $dataArray;
     }
 
+    public function updateModuleSensorData($moduleMac) {
+
+        global $databaseHost;
+        global $databaseName;
+        global $databaseLogin;
+        global $databasePassword;
+
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
+
+        $query = "SELECT ID, SensorName FROM WeatherSensor";
+        $result = mysqli_query($link, $query);
+
+        while ($line = mysqli_fetch_assoc($result))
+        {
+        }
+
+        mysqli_free_result($result);
+        mysqli_close($link);
+    }
+
     public function getData($query) {
 
         global $databaseHost;
@@ -308,12 +332,12 @@ class Requester
         $query = "SELECT Password, UserName, VerificationCode, Email, IsActive FROM WeatherUser WHERE LOWER('$email') = LOWER(Email)";
         $result = mysqli_query($link, $query);
 
-        $line = mysqli_fetch_row($result);
-        $databasePassword = $line[0];
-        $databaseUserName = $line[1];
-        $verificationCode = $line[2];
-        $databaseEmail = $line[3];
-        $databaseIsActive = $line[4];
+        $line = mysqli_fetch_assoc($result);
+        $databasePassword = $line["Password"];
+        $databaseUserName = $line["UserName"];
+        $verificationCode = $line["VerificationCode"];
+        $databaseEmail = $line["Email"];
+        $databaseIsActive = $line["IsActive"];
 
         $result = password_verify($password, $databasePassword);
 

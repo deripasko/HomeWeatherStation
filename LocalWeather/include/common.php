@@ -6,6 +6,8 @@ include_once("requester.php");
 // check whether has valid user cookie
 function checkUser() {
 
+    global $userSessionVarName;
+
     // already has logged-in user
     if (isset($_SESSION[$userSessionVarName]))
         return true;

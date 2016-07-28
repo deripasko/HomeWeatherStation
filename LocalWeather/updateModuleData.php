@@ -41,6 +41,8 @@ if (isset($_REQUEST["chartVisibility"])) {
     $requester->updateData("UPDATE WeatherModule SET ChartVisibility = $chartVisibility WHERE MAC = '$mac'");
 }
 
+$requester->updateModuleSensorData($mac);
+
 $allData = (object) [];
 $allData->modules = $requester->getData("SELECT * FROM WeatherModule");
 
