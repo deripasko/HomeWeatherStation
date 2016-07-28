@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 28, 2016 at 07:48 PM
+-- Generation Time: Jul 28, 2016 at 07:49 PM
 -- Server version: 5.5.35-33.0-log
 -- PHP Version: 5.4.39
 
@@ -23,27 +23,17 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `WeatherData`
+-- Table structure for table `ModuleSensor`
 --
 
-CREATE TABLE IF NOT EXISTS `WeatherData` (
+CREATE TABLE IF NOT EXISTS `ModuleSensor` (
   `ID` int(11) NOT NULL,
-  `ModuleMAC` varchar(50) NOT NULL,
-  `Temperature1` float DEFAULT NULL,
-  `Temperature2` float DEFAULT NULL,
-  `Temperature3` float DEFAULT NULL,
-  `Temperature4` float DEFAULT NULL,
-  `Humidity1` float DEFAULT NULL,
-  `Humidity2` float DEFAULT NULL,
-  `Humidity3` float DEFAULT NULL,
-  `Humidity4` float DEFAULT NULL,
-  `Pressure1` float DEFAULT NULL,
-  `Pressure2` float DEFAULT NULL,
-  `Pressure3` float DEFAULT NULL,
-  `Pressure4` float DEFAULT NULL,
-  `Illumination` float DEFAULT NULL,
-  `CO2` float DEFAULT NULL,
-  `MeasuredDateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `ModuleID` int(11) NOT NULL,
+  `SensorID` int(11) NOT NULL,
+  `IsActive` bit(1) DEFAULT NULL,
+  `Description` text,
+  `ChartVisibility` bit(1) DEFAULT NULL,
+  `TableVisibility` bit(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -51,9 +41,9 @@ CREATE TABLE IF NOT EXISTS `WeatherData` (
 --
 
 --
--- Indexes for table `WeatherData`
+-- Indexes for table `ModuleSensor`
 --
-ALTER TABLE `WeatherData`
+ALTER TABLE `ModuleSensor`
   ADD PRIMARY KEY (`ID`);
 
 --
@@ -61,9 +51,9 @@ ALTER TABLE `WeatherData`
 --
 
 --
--- AUTO_INCREMENT for table `WeatherData`
+-- AUTO_INCREMENT for table `ModuleSensor`
 --
-ALTER TABLE `WeatherData`
+ALTER TABLE `ModuleSensor`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
