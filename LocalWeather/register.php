@@ -17,6 +17,9 @@ if (!$publicServer || checkUser()) {
     <title>Домашняя метеостанция - Регистрация</title>
     <?php include_once("include/header.php"); ?>
     <script src="scripts/registerController.js" type="text/javascript"></script>
+    <script>
+        delete_cookie("username");
+    </script>
 </head>
 <body>
 

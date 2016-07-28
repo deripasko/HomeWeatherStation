@@ -64,6 +64,11 @@ if ($publicServer) {
                         <button id="btnValidate" class="btn btn-success">Проверить</button>
                     </div>
                 </div>
+                <div id="validationCodePane" class="bs-callout bs-callout-info" style="display: none;">
+                    <p>
+                        Код валидации введен верно.
+                    </p>
+                </div>
                 <?php } ?>
                 <div class="bs-callout bs-callout-warning">
                     <h4>Что такое код валидации?</h4>

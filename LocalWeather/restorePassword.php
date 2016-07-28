@@ -17,6 +17,9 @@ if (!$publicServer || checkUser()) {
     <title>Домашняя метеостанция - Восстановление пароля</title>
     <?php include_once("include/header.php"); ?>
     <script src="scripts/restoreController.js" type="text/javascript"></script>
+    <script>
+        delete_cookie("username");
+    </script>
 </head>
 <body>
 

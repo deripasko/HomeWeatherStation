@@ -107,7 +107,7 @@ class Requester
                 }
                 else {
                     if ($columnType == "VAR_STRING" || $columnType == "BLOB")
-                        $sensorData->$columnName = $col_value; //iconv('windows-1251', 'utf-8', $col_value);
+                        $sensorData->$columnName = $col_value;
                     if ($columnType == "FLOAT")
                         $sensorData->$columnName = (float)$col_value;
                     if ($columnType == "LONG" || $columnType == "BIT")
@@ -165,6 +165,8 @@ class Requester
         global $databaseName;
         global $databaseLogin;
         global $databasePassword;
+        global $publicServer;
+        global $userSessionVarName;
 
         $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
         if (mysqli_connect_errno() != 0)
@@ -177,6 +179,11 @@ class Requester
             $macFilter = "LOCATE(wd.ModuleMAC, '$params->filteredMacs') <> 0";
         }
 
+        $whereClause = "1 = 1";
+        if ($publicServer) {
+            $whereClause = "wm.ValidationCode = '" . $_SESSION[$userSessionVarName]->verificationCode . "'";
+        }
+
         if ($params->queryType == "all") {
             // called from Datas page
             $rowsToSkip = $params->pageIndex * $params->pageSize;
@@ -186,10 +193,10 @@ class Requester
                      " wd.Pressure1, wd.Pressure2, wd.Pressure3, wd.Pressure4,".
                      " wd.Illumination, wd.CO2, wd.MeasuredDateTime".
                      " FROM WeatherData wd".
-                     " JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE $macFilter ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
+                     " JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE $macFilter AND $whereClause ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
         } else {
             // called from Charts page
-            $query = "SELECT wd.* FROM WeatherData wd WHERE DATE_SUB(NOW(), INTERVAL $params->interval) < MeasuredDateTime AND $macFilter";
+            $query = "SELECT wd.* FROM WeatherData wd JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE DATE_SUB(NOW(), INTERVAL $params->interval) < MeasuredDateTime AND $macFilter AND $whereClause";
         }
 
         $result = mysqli_query($link, $query);
@@ -402,6 +409,12 @@ class Requester
                 $_SESSION[$userSessionVarName] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
                 $validationResult = true;
                 break;
+            } else {
+                // clear cookies for security
+                if (isset($_COOKIE['username'])) {
+                    unset($_COOKIE['username']);
+                    setcookie('username', null, -1, '/');
+                }
             }
         }
 
