@@ -3,7 +3,8 @@
 include_once("siteConfig.php");
 include_once("include/common.php");
 
-session_start();
+if (!isset($_SESSION))
+    session_start();
 
 if ($publicServer) {
     if (!checkUser()) {

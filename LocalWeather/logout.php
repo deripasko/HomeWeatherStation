@@ -1,7 +1,9 @@
 <?php
 
 include_once("siteConfig.php");
-session_start();
+
+if (!isset($_SESSION))
+    session_start();
 
 if (!$publicServer) {
     header("Location: index.php");
@@ -21,6 +23,9 @@ if (isset($_COOKIE['username'])) {
 <head>
     <title>Домашняя метеостанция - Выход</title>
     <?php include_once("include/header.php"); ?>
+    <script>
+        delete_cookie("username");
+    </script>
 </head>
 <body>
 
@@ -35,7 +40,7 @@ if (isset($_COOKIE['username'])) {
                     <div class="form-group text-center">
                         <p class="jumboLoginMessage">Домашняя метеостанция</p>
                     </div>
-                    <div id="errorPane" class="alert alert-info" role="alert">Выход выполнен. Для продолжения работы - <b><a href="/login.php">войдите</a></b> на сайт.</div>
+                    <div id="errorPane" class="alert alert-info" role="alert">Выход выполнен. Для продолжения работы - <b><a href="login.php">войдите</a></b> на сайт.</div>
                 </form>
             </div>
         </div>

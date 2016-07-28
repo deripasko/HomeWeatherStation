@@ -3,7 +3,8 @@
 include_once("siteConfig.php");
 include_once("include/common.php");
 
-session_start();
+if (!isset($_SESSION))
+    session_start();
 
 if ($publicServer) {
     if (!checkUser()) {
@@ -29,26 +30,45 @@ if ($publicServer) {
         <div class="col-sm-12 col-md-12">
             <form>
                 <div class="form-group row">
-                    <label class="col-sm-4 form-control-label">Email</label>
-                    <div class="col-sm-8">
-                        <p class="form-control-static">email@example.com</p>
+                    <label class="col-sm-3 form-control-label">Email:</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static">
+                            <?php echo $_SESSION["user"]->userEmail ?>
+                        </p>
                     </div>
                 </div>
+                <?php if ($_SESSION["user"]->isActive == 1) { ?>
                 <div class="form-group row">
-                    <label for="inputEmail3" class="col-sm-4 form-control-label">Email</label>
-                    <div class="col-sm-8">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                    <label class="col-sm-3 form-control-label">Код валидации:</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static">
+                            <?php echo $_SESSION["user"]->verificationCode ?>
+                        </p>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="inputPassword3" class="col-sm-4 form-control-label">Password</label>
-                    <div class="col-sm-8">
-                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                <?php } else { ?>
+                <div id="validationTextRow" class="form-group row" style="display: none;">
+                    <label class="col-sm-3 form-control-label">Код валидации:</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static">
+                            <?php echo $_SESSION["user"]->verificationCode ?>
+                        </p>
                     </div>
                 </div>
+                <div id="validationInputRow" class="form-group row">
+                    <label for="validationCode" class="col-sm-3 form-control-label">Код валидации:</label>
+                    <div class="col-sm-6">
+                        <input type="text" maxlength="16" class="form-control" id="validationCode" placeholder="Код валидации" value="" />
+                    </div>
+                    <div class="col-sm-2">
+                        <button id="btnValidate" class="btn btn-success">Проверить</button>
+                    </div>
+                </div>
+                <?php } ?>
+                <hr/>
                 <div class="form-group row">
-                    <div class="col-sm-offset-4 col-sm-8">
-                        <button type="submit" class="btn btn-secondary">Sign in</button>
+                    <div class="col-sm-offset-3 col-sm-6">
+                        <button id="btnSave" class="btn btn-primary">Сохранить</button>
                     </div>
                 </div>
             </form>

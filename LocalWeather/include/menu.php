@@ -28,7 +28,7 @@ $isUser = strpos($uri, "user.php") !== false;
                 <?php if ($publicServer) { ?>
                 <li <?php echo($isUser ? "class='active dropdown'" : "class='dropdown'"); ?>>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;<?php echo $_SESSION["username"] ?>&nbsp;<span class="caret"></span>
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;<?php echo $_SESSION["user"]->userName ?>&nbsp;<span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="user.php">Личный кабинет</a></li>

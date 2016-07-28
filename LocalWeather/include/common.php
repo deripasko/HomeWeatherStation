@@ -7,7 +7,7 @@ include_once("requester.php");
 function checkUser() {
 
     // already has logged-in user
-    if (isset($_SESSION["username"]))
+    if (isset($_SESSION["user"]))
         return true;
 
     // don't have user cookie at all

@@ -1,6 +1,6 @@
 <?php
 
-if ($publicServer)
+if (!isset($_SESSION))
     session_start();
 
 include_once("dbconfig.php");
@@ -297,16 +297,25 @@ class Requester
         $email = trim($email);
         $password = trim($password);
 
-        $query = "SELECT Password, UserName FROM WeatherUser WHERE LOWER('$email') = LOWER(Email)";
+        $query = "SELECT Password, UserName, VerificationCode, Email, IsActive FROM WeatherUser WHERE LOWER('$email') = LOWER(Email)";
         $result = mysqli_query($link, $query);
 
         $line = mysqli_fetch_row($result);
         $databasePassword = $line[0];
         $databaseUserName = $line[1];
+        $verificationCode = $line[2];
+        $databaseEmail = $line[3];
+        $databaseIsActive = $line[4];
+
         $result = password_verify($password, $databasePassword);
 
         if ($result) {
-            $_SESSION["username"] = $databaseUserName;
+
+            $query = "UPDATE WeatherUser SET LastLoginDateTime = CURRENT_TIMESTAMP WHERE LOWER('$email') = LOWER(Email)";
+            mysqli_query($link, $query);
+
+            $_SESSION["user"] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
+
             if ($setCookie == 1) {
                 $ip = $_SERVER['REMOTE_ADDR'];
                 $cookieValue = $databaseUserName . $ip;
@@ -336,7 +345,25 @@ class Requester
         $query = "UPDATE WeatherUser SET IsActive = 1, VerifiedDateTime = CURRENT_TIMESTAMP WHERE VerificationCode = '$code'";
         mysqli_query($link, $query);
 
+        $query = "SELECT IsActive from WeatherUser WHERE UserName = '" . $_SESSION["user"]->userName . "'";
+        $result = mysqli_query($link, $query);
+
+        while ($line = mysqli_fetch_assoc($result))
+        {
+            $databaseIsActive = $line["IsActive"];
+            $_SESSION["user"]->isActive = $databaseIsActive;
+        }
+
         mysqli_close($link);
+    }
+
+    private function createSessionUser($userName, $verificationCode, $email, $isActive) {
+        $sessionData = (object)[];
+        $sessionData->userName = $userName;
+        $sessionData->userEmail = $email;
+        $sessionData->verificationCode = $verificationCode;
+        $sessionData->isActive = $isActive;
+        return $sessionData;
     }
 
     public function validateCookie($cookieHash) {
@@ -355,17 +382,21 @@ class Requester
             die("Could not connect: " . mysqli_connect_error());
         }
 
-        $query = "SELECT UserName from WeatherUser";
+        $query = "SELECT UserName, VerificationCode, Email, IsActive from WeatherUser";
         $result = mysqli_query($link, $query);
 
         while ($line = mysqli_fetch_assoc($result))
         {
             $databaseUserName = $line["UserName"];
+            $verificationCode = $line["VerificationCode"];
+            $databaseEmail = $line["Email"];
+            $databaseIsActive = $line["IsActive"];
+
             $cookieValue = $databaseUserName . $ip;
 
             $verifyResult = password_verify($cookieValue, $cookieHash);
             if ($verifyResult) {
-                $_SESSION["username"] = $databaseUserName;
+                $_SESSION["user"] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
                 $validationResult = true;
                 break;
             }

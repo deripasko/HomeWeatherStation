@@ -1,10 +1,13 @@
 <?php
 
 include_once("siteConfig.php");
-session_start();
+include_once("include/common.php");
 
-if (!$publicServer || isset($_SESSION["username"])) {
-    header("Location: /");
+if (!isset($_SESSION))
+    session_start();
+
+if (!$publicServer || checkUser()) {
+    header("Location: index.php");
 }
 
 ?>

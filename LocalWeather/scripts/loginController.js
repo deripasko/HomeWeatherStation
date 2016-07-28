@@ -85,7 +85,7 @@ var loginController = function(params) {
 
     function loginUserCallback(payload) {
         if (payload.result === true) {
-            document.location = "/";
+            document.location = "index.php";
         } else {
             disableForm(false);
             errorPane.innerHTML = "Введены неверные e-mail и/или пароль.";

@@ -4,9 +4,8 @@
 
 include_once("siteConfig.php");
 
-if ($publicServer) {
+if (!isset($_SESSION))
     session_start();
-}
 
 include_once("requester.php");
 
