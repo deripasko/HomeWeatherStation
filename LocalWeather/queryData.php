@@ -45,6 +45,7 @@ if ($getModules) {
     $params->whereClause = $whereClause;
     $params->sortClause = $sortClause;
     $params->getModuleSensors = (isset($_REQUEST["getModuleSensors"]) ? (int)$_REQUEST["getModuleSensors"] : 0) == 1;
+    $params->getModuleWeather = (isset($_REQUEST["getModuleWeather"]) ? (int)$_REQUEST["getModuleWeather"] : 0) == 1;
 
     $allData->modules = $requester->getModulesData($params);
 }

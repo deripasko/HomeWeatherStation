@@ -234,7 +234,55 @@ class Requester
         return $allData;
     }
 
+    private function floatOrNull($value) {
+        if (isset($value))
+            return (float)$value;
+
+        return null;
+    }
+
+    private function getRecentModuleWeather($moduleMac) {
+
+        global $databaseHost;
+        global $databaseName;
+        global $databaseLogin;
+        global $databasePassword;
+
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
+
+        $query = "SELECT * FROM WeatherData WHERE ModuleMAC = '$moduleMac' ORDER BY MeasuredDateTime DESC LIMIT 1";
+        $result = mysqli_query($link, $query);
+
+        $moduleWeather = (object) [];
+
+        $line = mysqli_fetch_assoc($result);
+        $moduleWeather->Temperature1 = $this->floatOrNull($line["Temperature1"]);
+        $moduleWeather->Temperature2 = $this->floatOrNull($line["Temperature2"]);
+        $moduleWeather->Temperature3 = $this->floatOrNull($line["Temperature3"]);
+        $moduleWeather->Temperature4 = $this->floatOrNull($line["Temperature4"]);
+        $moduleWeather->Humidity1 = $this->floatOrNull($line["Humidity1"]);
+        $moduleWeather->Humidity2 = $this->floatOrNull($line["Humidity2"]);
+        $moduleWeather->Humidity3 = $this->floatOrNull($line["Humidity3"]);
+        $moduleWeather->Humidity4 = $this->floatOrNull($line["Humidity4"]);
+        $moduleWeather->Pressure1 = $this->floatOrNull($line["Pressure1"]);
+        $moduleWeather->Pressure2 = $this->floatOrNull($line["Pressure2"]);
+        $moduleWeather->Pressure3 = $this->floatOrNull($line["Pressure3"]);
+        $moduleWeather->Pressure4 = $this->floatOrNull($line["Pressure4"]);
+        $moduleWeather->Illumination = $this->floatOrNull($line["Illumination"]);
+        $moduleWeather->CO2 = $this->floatOrNull($line["CO2"]);
+
+        mysqli_free_result($result);
+        mysqli_close($link);
+
+        return $moduleWeather;
+    }
+
     public function getModulesData($params) {
+
         $query = "SELECT * FROM WeatherModule $params->whereClause $params->sortClause";
         $modulesData = $this->getData($query);
 
@@ -252,6 +300,24 @@ class Requester
                 array_push($moduleSensorsData, $moduleSensorProxy);
             }
             $modulesData["moduleSensors"] = $moduleSensorsData;
+
+        }
+
+        if ($params->getModuleWeather) {
+
+            $moduleWeatherData = array();
+            for ($i = 0; $i < count($modulesData["data"]); $i++) {
+                $data = $modulesData["data"][$i];
+                $moduleMac = $data->MAC;
+                $moduleId = $data->ID;
+
+                $moduleWeatherProxy = (object)[];
+                $moduleWeatherProxy->weather = $this->getRecentModuleWeather($moduleMac);
+                $moduleWeatherProxy->moduleId = $moduleId;
+
+                array_push($moduleWeatherData, $moduleWeatherProxy);
+            }
+            $modulesData["moduleWeather"] = $moduleWeatherData;
 
         }
 
