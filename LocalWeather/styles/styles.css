@@ -436,3 +436,67 @@ hr {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
 }
+
+.blink_me_up {
+    -webkit-animation-name: blinker_up;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: 1;
+
+    -moz-animation-name: blinker_up;
+    -moz-animation-duration: 1s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: 1;
+
+    animation-name: blinker_up;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
+@-moz-keyframes blinker_up {
+    0% { background-color: #D9534F; }
+    100% { background-color: #777; }
+}
+
+@-webkit-keyframes blinker_up {
+    0% { background-color: #D9534F; }
+    100% { background-color: #777; }
+}
+
+@keyframes blinker_up {
+    0% { background-color: #D9534F; }
+    100% { background-color: #777; }
+}
+
+.blink_me_down {
+    -webkit-animation-name: blinker_down;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: 1;
+
+    -moz-animation-name: blinker_down;
+    -moz-animation-duration: 1s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: 1;
+
+    animation-name: blinker_down;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
+@-moz-keyframes blinker_down {
+    0% { background-color: #6FA2FF; }
+    100% { background-color: #777; }
+}
+
+@-webkit-keyframes blinker_down {
+    0% { background-color: #6FA2FF; }
+    100% { background-color: #777; }
+}
+
+@keyframes blinker_down {
+    0% { background-color: #6FA2FF; }
+    100% { background-color: #777; }
+}
