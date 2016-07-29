@@ -43,8 +43,19 @@ if (isset($_REQUEST["chartVisibility"])) {
 
 $requester->updateModuleSensorData($mac);
 
+$whereClause = "";
+if ($publicServer) {
+    $whereClause = "WHERE ValidationCode = '" . $_SESSION[$userSessionVarName]->verificationCode . "'";
+}
+
 $allData = (object) [];
-$allData->modules = $requester->getData("SELECT * FROM WeatherModule");
+
+$params = (object) [];
+$params->whereClause = $whereClause;
+$params->sortClause = "";
+$params->getModuleSensors = (isset($_REQUEST["getModuleSensors"]) ? (int)$_REQUEST["getModuleSensors"] : 0) == 1;
+
+$allData->modules = $requester->getModulesData($params);
 
 print json_encode($allData, JSON_UNESCAPED_UNICODE);
 

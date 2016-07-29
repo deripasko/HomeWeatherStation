@@ -140,12 +140,63 @@ class Requester
         $query = "SELECT ID, SensorName FROM WeatherSensor";
         $result = mysqli_query($link, $query);
 
+        // delete all module related sensors before adding new info
+        $clearClause = "DELETE FROM ModuleSensor WHERE ModuleID = (SELECT ID FROM WeatherModule WHERE MAC = '$moduleMac')";
+        mysqli_query($link, $clearClause);
+
         while ($line = mysqli_fetch_assoc($result))
         {
+            $sensorId = $line["ID"];
+            $sensorName = $line["SensorName"];
+
+            $isSensorActive = 0;
+            if (isset($_REQUEST[$sensorName])) {
+                $isSensorActive = (int)$_REQUEST[$sensorName];
+            }
+
+            if ($isSensorActive == 1) {
+                $insertModuleSensorQuery = "INSERT INTO ModuleSensor SET ModuleID = (SELECT ID FROM WeatherModule WHERE MAC = '$moduleMac'), SensorID = $sensorId, IsActive = $isSensorActive";
+                mysqli_query($link, $insertModuleSensorQuery);
+            }
         }
 
         mysqli_free_result($result);
         mysqli_close($link);
+    }
+
+    private function getModuleSensorsData($moduleId) {
+
+        global $databaseHost;
+        global $databaseName;
+        global $databaseLogin;
+        global $databasePassword;
+
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
+
+        $query = "SELECT SensorID, IsActive FROM ModuleSensor WHERE ModuleID = $moduleId";
+        $result = mysqli_query($link, $query);
+
+        $moduleSensors = array();
+        while ($line = mysqli_fetch_assoc($result))
+        {
+            $sensorId = $line["SensorID"];
+            $sensorIsActive = $line["IsActive"];
+
+            $moduleSensor = (object) [];
+            $moduleSensor->sensorId = (int)$sensorId;
+            $moduleSensor->isActive = (int)$sensorIsActive;
+
+            array_push($moduleSensors, $moduleSensor);
+        }
+
+        mysqli_free_result($result);
+        mysqli_close($link);
+
+        return $moduleSensors;
     }
 
     public function getData($query) {
@@ -181,6 +232,30 @@ class Requester
         mysqli_close($link);
 
         return $allData;
+    }
+
+    public function getModulesData($params) {
+        $query = "SELECT * FROM WeatherModule $params->whereClause $params->sortClause";
+        $modulesData = $this->getData($query);
+
+        if ($params->getModuleSensors) {
+
+            $moduleSensorsData = array();
+            for ($i = 0; $i < count($modulesData["data"]); $i++) {
+                $data = $modulesData["data"][$i];
+                $moduleId = $data->ID;
+
+                $moduleSensorProxy = (object)[];
+                $moduleSensorProxy->sensors = $this->getModuleSensorsData($moduleId);
+                $moduleSensorProxy->moduleId = $moduleId;
+
+                array_push($moduleSensorsData, $moduleSensorProxy);
+            }
+            $modulesData["moduleSensors"] = $moduleSensorsData;
+
+        }
+
+        return $modulesData;
     }
 
     public function getWeatherData($params) {

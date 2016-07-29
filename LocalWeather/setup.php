@@ -50,6 +50,11 @@ if ($publicServer) {
                     </div>
                 </div>
                 <hr/>
+                <div class="form-group row">
+                    <div class="col-sm-10 col-sm-offset-2">
+                        Список активных сенсоров:
+                    </div>
+                </div>
                 <div id="sensorsList"></div>
             </div>
             <div class="modal-footer">

@@ -35,13 +35,18 @@ if ($getModules) {
     if (isset($sortBy)) {
         $sortClause = " ORDER BY $sortBy";
     }
+
     $whereClause = "";
     if ($publicServer) {
         $whereClause = "WHERE ValidationCode = '" . $_SESSION[$userSessionVarName]->verificationCode . "'";
     }
 
-    $query = "SELECT * FROM WeatherModule $whereClause $sortClause";
-    $allData->modules = $requester->getData($query);
+    $params = (object) [];
+    $params->whereClause = $whereClause;
+    $params->sortClause = $sortClause;
+    $params->getModuleSensors = (isset($_REQUEST["getModuleSensors"]) ? (int)$_REQUEST["getModuleSensors"] : 0) == 1;
+
+    $allData->modules = $requester->getModulesData($params);
 }
 
 if ($getWeather) {
