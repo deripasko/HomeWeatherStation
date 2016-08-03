@@ -55,10 +55,20 @@ if ($publicServer) {
                         Список активных сенсоров:
                     </div>
                 </div>
-                <div id="sensorsList"></div>
+                <div id="sensorsList">
+                    <div class="row">
+                        <label class="col-sm-2">&nbsp;</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox checkbox-warning no-top-bottom-margin">
+                                <input type="checkbox" id="inputAll" />
+                                <label for="inputAll">Выбрать все</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnSaveModule">Сохранить</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnSaveModule">Сохранить</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
             </div>
         </div>
