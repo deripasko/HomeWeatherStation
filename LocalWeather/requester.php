@@ -321,6 +321,8 @@ class Requester
 
         }
 
+        $modulesData["ServerDateTime"] = date("Y-m-d G:i:s");
+
         return $modulesData;
     }
 
