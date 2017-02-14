@@ -32,27 +32,21 @@ if ($publicServer) {
                 <div class="form-group row">
                     <label class="col-sm-3 form-control-label">Email:</label>
                     <div class="col-sm-6">
-                        <p class="form-control-static">
-                            <?php echo $_SESSION[$userSessionVarName]->userEmail ?>
-                        </p>
+                        <p class="form-control-static"><?php echo $_SESSION[$userSessionVarName]->userEmail ?></p>
                     </div>
                 </div>
                 <?php if ($_SESSION[$userSessionVarName]->isActive == 1) { ?>
                 <div class="form-group row">
                     <label class="col-sm-3 form-control-label">Код валидации:</label>
                     <div class="col-sm-6">
-                        <p class="form-control-static">
-                            <?php echo $_SESSION[$userSessionVarName]->verificationCode ?>
-                        </p>
+                        <p class="form-control-static"><?php echo $_SESSION[$userSessionVarName]->verificationCode ?></p>
                     </div>
                 </div>
                 <?php } else { ?>
                 <div id="validationTextRow" class="form-group row" style="display: none;">
                     <label class="col-sm-3 form-control-label">Код валидации:</label>
                     <div class="col-sm-6">
-                        <p class="form-control-static">
-                            <?php echo $_SESSION[$userSessionVarName]->verificationCode ?>
-                        </p>
+                        <p class="form-control-static"><?php echo $_SESSION[$userSessionVarName]->verificationCode ?></p>
                     </div>
                 </div>
                 <div id="validationInputRow" class="form-group row">

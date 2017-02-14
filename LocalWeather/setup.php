@@ -40,10 +40,28 @@ if ($publicServer) {
                         <input class="form-control" id="inputDescription" placeholder="Описание модуля" />
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="row">
                     <label class="col-sm-2">&nbsp;</label>
                     <div class="col-sm-10">
-                        <div class="checkbox checkbox-warning">
+                        <div class="checkbox checkbox-warning no-top-bottom-margin">
+                            <input type="checkbox" id="inputTable" />
+                            <label for="inputTable">Отображать на странице Данные</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-sm-2">&nbsp;</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox checkbox-warning no-top-bottom-margin">
+                            <input type="checkbox" id="inputChart" />
+                            <label for="inputChart">Отображать на странице Графики</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-sm-2">&nbsp;</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox checkbox-warning no-top-bottom-margin">
                             <input type="checkbox" id="inputActive" />
                             <label for="inputActive">Модуль активен</label>
                         </div>

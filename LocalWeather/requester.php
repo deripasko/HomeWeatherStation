@@ -124,6 +124,7 @@ class Requester
         return $dataArray;
     }
 
+    // update active sensors list for the selected module
     public function updateModuleSensorData($moduleMac) {
 
         global $databaseHost;
@@ -140,10 +141,7 @@ class Requester
         $query = "SELECT ID, SensorName FROM WeatherSensor";
         $result = mysqli_query($link, $query);
 
-        // delete all module related sensors before adding new info
-        $clearClause = "DELETE FROM ModuleSensor WHERE ModuleID = (SELECT ID FROM WeatherModule WHERE MAC = '$moduleMac')";
-        mysqli_query($link, $clearClause);
-
+        // insert data for all selected sensors
         while ($line = mysqli_fetch_assoc($result))
         {
             $sensorId = $line["ID"];
@@ -154,8 +152,21 @@ class Requester
                 $isSensorActive = (int)$_REQUEST[$sensorName];
             }
 
-            if ($isSensorActive == 1) {
-                $insertModuleSensorQuery = "INSERT INTO ModuleSensor SET ModuleID = (SELECT ID FROM WeatherModule WHERE MAC = '$moduleMac'), SensorID = $sensorId, IsActive = $isSensorActive";
+            $sensorClause = "SELECT COUNT(*) as Total FROM ModuleSensor WHERE SensorID = $sensorId AND ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$moduleMac')";
+            $sensorResult = mysqli_query($link, $sensorClause);
+            $sensorExists = false;
+            while ($sensorLine = mysqli_fetch_assoc($sensorResult))
+            {
+                $sensorCount = $sensorLine["Total"];
+                $sensorExists = ($sensorCount == 1);
+            }
+            mysqli_free_result($sensorResult);
+
+            if ($sensorExists) {
+                $updateModuleSensorQuery = "UPDATE ModuleSensor SET IsActive = $isSensorActive WHERE ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$moduleMac') AND SensorID = $sensorId";
+                mysqli_query($link, $updateModuleSensorQuery);
+            } else {
+                $insertModuleSensorQuery = "INSERT INTO ModuleSensor SET ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$moduleMac'), SensorID = $sensorId, IsActive = $isSensorActive";
                 mysqli_query($link, $insertModuleSensorQuery);
             }
         }
@@ -177,18 +188,24 @@ class Requester
             die("Could not connect: " . mysqli_connect_error());
         }
 
-        $query = "SELECT SensorID, IsActive FROM ModuleSensor WHERE ModuleID = $moduleId";
+        $query = "SELECT SensorID, IsActive, Description, ChartVisibility, TableVisibility FROM ModuleSensor WHERE ModuleID = $moduleId";
         $result = mysqli_query($link, $query);
 
         $moduleSensors = array();
         while ($line = mysqli_fetch_assoc($result))
         {
             $sensorId = $line["SensorID"];
-            $sensorIsActive = $line["IsActive"];
+            $description = $line["Description"];
+            $chartVisibility = $line["ChartVisibility"];
+            $tableVisibility = $line["TableVisibility"];
+            $isActive = $line["IsActive"];
 
             $moduleSensor = (object) [];
             $moduleSensor->sensorId = (int)$sensorId;
-            $moduleSensor->isActive = (int)$sensorIsActive;
+            $moduleSensor->tableVisibility = (int)$tableVisibility;
+            $moduleSensor->description = $description;
+            $moduleSensor->chartVisibility = (int)$chartVisibility;
+            $moduleSensor->isActive = (int)$isActive;
 
             array_push($moduleSensors, $moduleSensor);
         }
@@ -291,7 +308,7 @@ class Requester
             $moduleSensorsData = array();
             for ($i = 0; $i < count($modulesData["data"]); $i++) {
                 $data = $modulesData["data"][$i];
-                $moduleId = $data->ID;
+                $moduleId = $data->ModuleID;
 
                 $moduleSensorProxy = (object)[];
                 $moduleSensorProxy->sensors = $this->getModuleSensorsData($moduleId);
@@ -309,7 +326,7 @@ class Requester
             for ($i = 0; $i < count($modulesData["data"]); $i++) {
                 $data = $modulesData["data"][$i];
                 $moduleMac = $data->MAC;
-                $moduleId = $data->ID;
+                $moduleId = $data->ModuleID;
 
                 $moduleWeatherProxy = (object)[];
                 $moduleWeatherProxy->weather = $this->getRecentModuleWeather($moduleMac);

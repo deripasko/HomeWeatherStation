@@ -4,7 +4,7 @@
 String renderParameterRow(String paramName, String paramId, String paramValue, int maxLength, bool isReadonly, bool isPassword)
 {
     String readonlyAttr = "readonly='readonly'";
-    return String("<div class='input-group'><span class='input-group-addon'>" + paramName + ":</span><input maxlength='" + maxLength + "' type='" + (isPassword ? "password" : "text") + "' id='" + paramId + "' class='form-control' " + (isReadonly ? readonlyAttr : "") + " value='" + paramValue + "' /></div>");
+    return String("<div class='input-group'><span class='input-group-addon'>" + paramName + ":</span><input maxlength='" + maxLength + "' type='" + (isPassword ? "password" : "text") + "' id='" + paramId + "' class='form-control' " + (isReadonly ? readonlyAttr : "") + " value='" + (isPassword ? "" : paramValue) + "' /></div>");
 }
 
 String renderTitle(String moduleName, String pageName)

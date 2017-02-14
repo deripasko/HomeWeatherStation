@@ -41,7 +41,9 @@ if (isset($_REQUEST["chartVisibility"])) {
     $requester->updateData("UPDATE WeatherModule SET ChartVisibility = $chartVisibility WHERE MAC = '$mac'");
 }
 
-$requester->updateModuleSensorData($mac);
+if (isset($_REQUEST["updateSensors"])) {
+    $requester->updateModuleSensorData($mac);
+}
 
 $whereClause = "";
 if ($publicServer) {
