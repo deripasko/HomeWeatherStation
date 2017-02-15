@@ -188,7 +188,7 @@ class Requester
             die("Could not connect: " . mysqli_connect_error());
         }
 
-        $query = "SELECT SensorID, IsActive, Description, ChartVisibility, TableVisibility FROM ModuleSensor WHERE ModuleID = $moduleId";
+        $query = "SELECT SensorID, IsActive, Description FROM ModuleSensor WHERE ModuleID = $moduleId";
         $result = mysqli_query($link, $query);
 
         $moduleSensors = array();
@@ -196,15 +196,11 @@ class Requester
         {
             $sensorId = $line["SensorID"];
             $description = $line["Description"];
-            $chartVisibility = $line["ChartVisibility"];
-            $tableVisibility = $line["TableVisibility"];
             $isActive = $line["IsActive"];
 
             $moduleSensor = (object) [];
             $moduleSensor->sensorId = (int)$sensorId;
-            $moduleSensor->tableVisibility = (int)$tableVisibility;
             $moduleSensor->description = $description;
-            $moduleSensor->chartVisibility = (int)$chartVisibility;
             $moduleSensor->isActive = (int)$isActive;
 
             array_push($moduleSensors, $moduleSensor);
@@ -317,7 +313,6 @@ class Requester
                 array_push($moduleSensorsData, $moduleSensorProxy);
             }
             $modulesData["moduleSensors"] = $moduleSensorsData;
-
         }
 
         if ($params->getModuleWeather) {
