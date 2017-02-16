@@ -16,9 +16,12 @@ if ($publicServer) {
 
 include_once("requester.php");
 
+global $userSessionVarName;
+
 $getSensors = (isset($_REQUEST["getSensors"]) ? (int)$_REQUEST["getSensors"] : 0) == 1;
 $getModules = (isset($_REQUEST["getModules"]) ? (int)$_REQUEST["getModules"] : 0) == 1;
 $getWeather = (isset($_REQUEST["getWeather"]) ? (int)$_REQUEST["getWeather"] : 0) == 1;
+$getSensorsData = (isset($_REQUEST["getSensorsData"]) ? (int)$_REQUEST["getSensorsData"] : 0) == 1;
 
 $allData = (object) [];
 
@@ -26,6 +29,10 @@ $requester = new Requester;
 
 if ($getSensors) {
     $allData->sensors = $requester->getData("SELECT * FROM WeatherSensor ORDER BY SortOrder");
+}
+
+if ($getSensorsData) {
+    $allData->sensorsData = $requester->getData("SELECT SensorID, TableVisibility, ChartVisibility FROM SensorData");
 }
 
 if ($getModules) {

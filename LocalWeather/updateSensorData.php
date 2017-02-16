@@ -16,25 +16,28 @@ if ($publicServer) {
 
 include_once("requester.php");
 
-$id = (int)$_REQUEST["id"];
+$sensorId = (int)$_REQUEST["id"];
 
 global $userSessionVarName;
-$validationCode = $_SESSION[$userSessionVarName]->verificationCode;
+$userId = $_SESSION[$userSessionVarName]->userId;
+
+$chartVisibility = null;
+$tableVisibility = null;
 
 $requester = new Requester;
 
 if (isset($_REQUEST["chartVisibility"])) {
     $chartVisibility = (int)$_REQUEST["chartVisibility"];
-    $requester->updateData("UPDATE ModuleSensor SET ChartVisibility = $chartVisibility WHERE SensorID = $id AND ModuleID IN (SELECT ModuleID FROM WeatherModule WHERE ValidationCode = '$validationCode')");
 }
 
 if (isset($_REQUEST["tableVisibility"])) {
     $tableVisibility = (int)$_REQUEST["tableVisibility"];
-    $requester->updateData("UPDATE ModuleSensor SET TableVisibility = $tableVisibility WHERE SensorID = $id AND ModuleID IN (SELECT ModuleID FROM WeatherModule WHERE ValidationCode = '$validationCode')");
 }
 
+$requester->updateSensorData($userId, $sensorId, $chartVisibility, $tableVisibility);
+
 $allData = (object) [];
-$allData->sensors = $requester->getData("SELECT ChartVisibility as chartVisibility, TableVisibility as tableVisibility, Description as description, IsActive as isActive, SensorId as sensorId FROM ModuleSensor");
+$allData->sensorsData = $requester->getData("SELECT SensorID, TableVisibility, ChartVisibility FROM SensorData");
 print json_encode($allData, JSON_UNESCAPED_UNICODE);
 
 ?>

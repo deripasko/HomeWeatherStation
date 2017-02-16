@@ -175,6 +175,59 @@ class Requester
         mysqli_close($link);
     }
 
+    public function updateSensorData($userId, $sensorId, $chartVisibility, $tableVisibility) {
+
+        global $databaseHost;
+        global $databaseName;
+        global $databaseLogin;
+        global $databasePassword;
+
+        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
+        if (mysqli_connect_errno() != 0)
+        {
+            die("Could not connect: " . mysqli_connect_error());
+        }
+
+        $sensorClause = "SELECT COUNT(*) as Total FROM SensorData WHERE UserID = $userId AND SensorID = $sensorId";
+        $sensorResult = mysqli_query($link, $sensorClause);
+        $sensorExists = false;
+
+        while ($sensorLine = mysqli_fetch_assoc($sensorResult))
+        {
+            $sensorCount = $sensorLine["Total"];
+            $sensorExists = ($sensorCount == 1);
+        }
+        mysqli_free_result($sensorResult);
+
+        if ($sensorExists) {
+
+            $updateSensorQuery = "";
+            if (!isset($chartVisibility)) {
+                $updateSensorQuery = "UPDATE SensorData SET TableVisibility = $tableVisibility WHERE UserID = $userId AND SensorID = $sensorId";
+            }
+            if (!isset($tableVisibility)) {
+                $updateSensorQuery = "UPDATE SensorData SET ChartVisibility = $chartVisibility WHERE UserID = $userId AND SensorID = $sensorId";
+            }
+
+            mysqli_query($link, $updateSensorQuery);
+
+        } else {
+
+            if (!isset($chartVisibility)) {
+                $chartVisibility = "NULL";
+            }
+            if (!isset($tableVisibility)) {
+                $tableVisibility = "NULL";
+            }
+
+            $insertSensorQuery = "INSERT INTO SensorData (UserID, SensorID, ChartVisibility, TableVisibility) VALUES ($userId, $sensorId, $chartVisibility, $tableVisibility)";
+            mysqli_query($link, $insertSensorQuery);
+
+        }
+
+        mysqli_close($link);
+    }
+
     private function getModuleSensorsData($moduleId) {
 
         global $databaseHost;
@@ -484,7 +537,7 @@ class Requester
         $email = trim($email);
         $password = trim($password);
 
-        $query = "SELECT Password, UserName, VerificationCode, Email, IsActive FROM WeatherUser WHERE LOWER('$email') = LOWER(Email)";
+        $query = "SELECT ID, Password, UserName, VerificationCode, Email, IsActive FROM WeatherUser WHERE LOWER('$email') = LOWER(Email)";
         $result = mysqli_query($link, $query);
 
         $line = mysqli_fetch_assoc($result);
@@ -493,6 +546,7 @@ class Requester
         $verificationCode = $line["VerificationCode"];
         $databaseEmail = $line["Email"];
         $databaseIsActive = $line["IsActive"];
+        $databaseUserId = $line["ID"];
 
         $result = password_verify($password, $databasePassword);
 
@@ -501,7 +555,7 @@ class Requester
             $query = "UPDATE WeatherUser SET LastLoginDateTime = CURRENT_TIMESTAMP WHERE LOWER('$email') = LOWER(Email)";
             mysqli_query($link, $query);
 
-            $_SESSION[$userSessionVarName] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
+            $_SESSION[$userSessionVarName] = $this->createSessionUser($databaseUserId, $databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
 
             if ($setCookie == 1) {
                 $ip = $_SERVER['REMOTE_ADDR'];
@@ -545,12 +599,13 @@ class Requester
         mysqli_close($link);
     }
 
-    private function createSessionUser($userName, $verificationCode, $email, $isActive) {
+    private function createSessionUser($userId, $userName, $verificationCode, $email, $isActive) {
         $sessionData = (object)[];
         $sessionData->userName = $userName;
         $sessionData->userEmail = $email;
         $sessionData->verificationCode = $verificationCode;
         $sessionData->isActive = $isActive;
+        $sessionData->userId = $userId;
         return $sessionData;
     }
 
@@ -571,7 +626,7 @@ class Requester
             die("Could not connect: " . mysqli_connect_error());
         }
 
-        $query = "SELECT UserName, VerificationCode, Email, IsActive from WeatherUser";
+        $query = "SELECT ID, UserName, VerificationCode, Email, IsActive from WeatherUser";
         $result = mysqli_query($link, $query);
 
         while ($line = mysqli_fetch_assoc($result))
@@ -580,12 +635,13 @@ class Requester
             $verificationCode = $line["VerificationCode"];
             $databaseEmail = $line["Email"];
             $databaseIsActive = $line["IsActive"];
+            $databaseUserId = $line["ID"];
 
             $cookieValue = $databaseUserName . $ip;
 
             $verifyResult = password_verify($cookieValue, $cookieHash);
             if ($verifyResult) {
-                $_SESSION[$userSessionVarName] = $this->createSessionUser($databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
+                $_SESSION[$userSessionVarName] = $this->createSessionUser($databaseUserId, $databaseUserName, $verificationCode, $databaseEmail, $databaseIsActive);
                 $validationResult = true;
                 break;
             } else {
