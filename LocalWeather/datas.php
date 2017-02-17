@@ -36,7 +36,7 @@ if ($publicServer) {
             </div>
             <div id="collapse1" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <p>Отображать данные с выбранных модулей (если ничего не выбрано - будут показаны все данные):</p>
+                    <p>Отображать данные с выбранных модулей:</p>
                     <div id="modulesList"></div>
                     <hr/>
                     <p>Отображать данные с сенсоров:</p>

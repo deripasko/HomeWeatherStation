@@ -37,7 +37,7 @@ if ($publicServer) {
 </div>
 
 <div class="pageContainer" id="pageContainer"></div>
-<p class="jumboMessage" id="jumboMessage">Здесь будут отображаться карточки модулей, подключенных к Домашней метеостанции.</p>
+<p class="jumboMessage" id="jumboMessage">Здесь будут отображаться карточки активных модулей, подключенных к Домашней метеостанции.</p>
 
 <script type="text/javascript">
     var indexPage;

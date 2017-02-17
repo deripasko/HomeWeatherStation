@@ -484,14 +484,23 @@ class Requester
 
         $link = $this->getDatabaseLink();
 
-        $macFilter = "1 = 1";
-        if ($params->filteredMacs != "") {
-            $macFilter = "LOCATE(wd.ModuleMAC, '$params->filteredMacs') <> 0";
+        $verificationCode = $_SESSION[$userSessionVarName]->verificationCode;
+        $macFilterAddition = "1 = 1";
+        $macFilterWhere = "";
+        if ($publicServer) {
+            $macFilterAddition = "ValidationCode = '$verificationCode'";
         }
+        if ($params->fromDataPage == 1) {
+            $macFilterWhere = "TableVisibility = 1";
+        }
+        if ($params->fromChartsPage == 1) {
+            $macFilterWhere = "ChartVisibility = 1";
+        }
+        $macFilter = "wd.ModuleMAC IN (SELECT MAC FROM WeatherModule WHERE $macFilterWhere AND $macFilterAddition AND IsActive = 1)";
 
         $whereClause = "1 = 1";
         if ($publicServer) {
-            $whereClause = "wm.ValidationCode = '" . $_SESSION[$userSessionVarName]->verificationCode . "'";
+            $whereClause = "wm.ValidationCode = '$verificationCode'";
         }
 
         if ($params->queryType == "all") {

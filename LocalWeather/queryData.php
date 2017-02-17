@@ -66,9 +66,10 @@ if ($getWeather) {
     $pageIndex = isset($_REQUEST["pageIndex"]) ? (int)$_REQUEST["pageIndex"] : 0;
     $pageSize = isset($_REQUEST["pageSize"]) ? (int)$_REQUEST["pageSize"] : 20;
     $queryType = $_REQUEST["queryType"];
+    $fromDataPage = isset($_REQUEST["fromDataPage"]) ? (int)$_REQUEST["fromDataPage"] : 0;
+    $fromChartsPage = isset($_REQUEST["fromChartsPage"]) ? (int)$_REQUEST["fromChartsPage"] : 0;
     if ($queryType != "all")
         $interval = $_REQUEST["interval"];
-    $filteredMacs = $_REQUEST["filteredMacs"];
 
     $params = (object) [];
     $params->sortBy = $sortBy;
@@ -77,7 +78,8 @@ if ($getWeather) {
     $params->pageSize = $pageSize;
     $params->queryType = $queryType;
     $params->interval = $interval;
-    $params->filteredMacs = $filteredMacs;
+    $params->fromChartsPage = $fromChartsPage;
+    $params->fromDataPage = $fromDataPage;
 
     $allData->weather = $requester->getWeatherData($params);
 }
