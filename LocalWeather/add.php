@@ -1,6 +1,9 @@
 <?php
 
 include_once("dbconfig.php");
+include_once("requester.php");
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 function getParam($object, $name)
 {
@@ -27,10 +30,12 @@ if (empty($input)) {
     return;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 $object = json_decode($input, true);
 
-$moduleid = (int)getParam($object, "moduleid");
-$modulename = getParam($object, "modulename");
+$moduleId = (int)getParam($object, "moduleid");
+$moduleName = getParam($object, "modulename");
 $code = getParam($object, "code");
 
 $ip = getParam($object, "ip");
@@ -56,63 +61,47 @@ $pressure4 = valueOrNull((float)getParam($object, "pressure4"));
 $illumination = valueOrNull((float)getParam($object, "illumination"));
 $co2level = valueOrNull((float)getParam($object, "co2"));
 
-if ($moduleid == 0) {
-    $data = array(
-        'error' => 'Wrong module ID.'
-    );
-    print json_encode($data);
-    return;
-}
+////////////////////////////////////////////////////////////////////////////////////////////
 
-try {
-    $link = mysql_connect($databaseHost, $databaseLogin, $databasePassword);
-} catch (Exception $e) {
-    $data = array(
-        'error' => mysql_error()
-    );
-    print json_encode($data);
-    return;
-}
+$weatherData = (object) [];
+$weatherData->mac = $mac;
+$weatherData->temperature1 = $temperature1;
+$weatherData->temperature2 = $temperature2;
+$weatherData->temperature3 = $temperature3;
+$weatherData->temperature4 = $temperature4;
+$weatherData->humidity1 = $humidity1;
+$weatherData->humidity2 = $humidity2;
+$weatherData->humidity3 = $humidity3;
+$weatherData->humidity4 = $humidity4;
+$weatherData->pressure1 = $pressure1;
+$weatherData->pressure2 = $pressure2;
+$weatherData->pressure3 = $pressure3;
+$weatherData->pressure4 = $pressure4;
+$weatherData->illumination = $illumination;
+$weatherData->co2 = $co2level;
 
-$sql = "INSERT INTO WeatherData (ModuleMAC, Temperature1, Temperature2, Temperature3, Temperature4, Humidity1, Humidity2, Humidity3, Humidity4, Pressure1, Pressure2, Pressure3, Pressure4, Illumination, CO2) VALUES ('$mac', $temperature1, $temperature2, $temperature3, $temperature4, $humidity1, $humidity2, $humidity3, $humidity4, $pressure1, $pressure2, $pressure3, $pressure4, $illumination, $co2level)";
-try {
-    mysql_select_db($databaseName);
-    mysql_query($sql);
-    $id = mysql_insert_id();
-} catch (Exception $e) {
-    $data = array(
-        'error' => mysql_error()
-    );
-    print json_encode($data);
-    return;
-}
+////////////////////////////////////////////////////////////////////////////////////////////
 
-try {
-    $sql = "SELECT COUNT(*) as Total FROM WeatherModule where MAC = '$mac'";
-    $result = mysql_query($sql);
-    $moduleData = mysql_fetch_assoc($result);
-    $moduleExists = $moduleData["Total"] == 1;
-    mysql_free_result($result);
+$moduleData = (object) [];
+$moduleData->mac = $mac;
+$moduleData->ip = $ip;
+$moduleData->moduleName = $moduleName;
+$moduleData->moduleId = $moduleId;
+$moduleData->code = $code;
+$moduleData->delay = $delay;
 
-    if ($moduleExists) {
-        $sql = "UPDATE WeatherModule SET IP = '$ip', ModuleName = '$modulename', ModuleID = $moduleid, ValidationCode = '$code', SensorDelay = $delay, LastSeenDateTime = CURRENT_TIMESTAMP WHERE MAC = '$mac'";
-        mysql_query($sql);
-    } else {
-        $sql = "INSERT INTO WeatherModule (ModuleID, ModuleName, IP, MAC, SensorDelay, ValidationCode) VALUES ($moduleid, '$modulename', '$ip', '$mac', $delay, '$code')";
-        mysql_query($sql);
-    }
-} catch (Exception $e) {
-    $data = array(
-        'error' => mysql_error()
-    );
-    print json_encode($data);
-    return;
-}
+////////////////////////////////////////////////////////////////////////////////////////////
+
+$requester = new Requester;
+$id = $requester->addWeatherData($weatherData);
+$requester->updateModuleData($moduleData);
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 $data = array(
     'id' => $id,
-    'moduleid' => $moduleid,
-    'modulename' => $modulename,
+    'moduleid' => $moduleId,
+    'modulename' => $moduleName,
     'temperature1' => $temperature1,
     'temperature2' => $temperature2,
     'temperature3' => $temperature3,
@@ -136,7 +125,5 @@ $data = array(
 );
 
 print json_encode($data);
-
-mysql_close($link);
 
 ?>

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `WeatherModule` (
   `Description` text,
   `SensorDelay` int(11) DEFAULT NULL,
   `LastSeenDateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `IsActive` bit(1) DEFAULT NULL,
+  `IsActive` bit(1) DEFAULT b'1',
   `TableVisibility` bit(1) DEFAULT b'1',
   `ChartVisibility` bit(1) DEFAULT b'1',
   `ValidationCode` varchar(16) DEFAULT NULL

@@ -11,6 +11,10 @@ require 'lib/PHPMailer/PHPMailerAutoload.php';
 
 class Requester
 {
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // private methods
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     public static function h_type2txt($type_id)
     {
         static $types;
@@ -46,23 +50,16 @@ class Requester
         }
     }
 
-    public function updateData($query) {
+    private function floatOrNull($value) {
+        if (isset($value))
+            return (float)$value;
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
-
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
-
-        mysqli_query($link, $query);
-
-        mysqli_close($link);
+        return null;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // private database utility methods
+    ////////////////////////////////////////////////////////////////////////////////////////
 
     private function getFieldsArray($result) {
 
@@ -124,8 +121,7 @@ class Requester
         return $dataArray;
     }
 
-    // update active sensors list for the selected module
-    public function updateModuleSensorData($moduleMac) {
+    private function getDatabaseLink() {
 
         global $databaseHost;
         global $databaseName;
@@ -137,6 +133,91 @@ class Requester
         {
             die("Could not connect: " . mysqli_connect_error());
         }
+
+        return $link;
+    }
+
+    private function closeDatabaseLink($link) {
+        mysqli_close($link);
+    }
+
+    private function isDataExists($link, $query) {
+
+        $result = mysqli_query($link, $query);
+        $exists = false;
+
+        while ($line = mysqli_fetch_assoc($result))
+        {
+            $count = $line["Total"];
+            $exists = ($count == 1);
+        }
+
+        mysqli_free_result($result);
+
+        return $exists;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // private auth methods
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    private function createSessionUser($userId, $userName, $verificationCode, $email, $isActive) {
+        $sessionData = (object)[];
+        $sessionData->userName = $userName;
+        $sessionData->userEmail = $email;
+        $sessionData->verificationCode = $verificationCode;
+        $sessionData->isActive = $isActive;
+        $sessionData->userId = $userId;
+        return $sessionData;
+    }
+
+    private function sendEmail($to, $subject, $text) {
+
+        global $emailLogin;
+        global $emailPassword;
+        global $emailServer;
+        global $emailFrom;
+
+        $mail = new PHPMailer;
+
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = $emailServer;                           // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = $emailLogin;                        // SMTP username
+        $mail->Password = $emailPassword;                     // SMTP password
+        $mail->Port = 25;                                     // TCP port to connect to
+
+        $mail->setFrom($emailFrom, 'Домашняя метеостанция');
+        $mail->addAddress($to, $to);                          // Add a recipient
+
+        $mail->isHTML(true);                                  // Set email format to HTML
+
+        $mail->Subject = $subject;
+        $mail->Body    = $text;
+        $mail->CharSet = 'utf-8';
+
+        if(!$mail->send()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // public methods
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    public function updateData($query) {
+
+        $link = $this->getDatabaseLink();
+        mysqli_query($link, $query);
+        $this->closeDatabaseLink($link);
+    }
+
+    // update active sensors list for the selected module
+    public function updateModuleSensorData($moduleMac) {
+
+        $link = $this->getDatabaseLink();
 
         $query = "SELECT ID, SensorName FROM WeatherSensor";
         $result = mysqli_query($link, $query);
@@ -153,14 +234,7 @@ class Requester
             }
 
             $sensorClause = "SELECT COUNT(*) as Total FROM ModuleSensor WHERE SensorID = $sensorId AND ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$moduleMac')";
-            $sensorResult = mysqli_query($link, $sensorClause);
-            $sensorExists = false;
-            while ($sensorLine = mysqli_fetch_assoc($sensorResult))
-            {
-                $sensorCount = $sensorLine["Total"];
-                $sensorExists = ($sensorCount == 1);
-            }
-            mysqli_free_result($sensorResult);
+            $sensorExists = $this->isDataExists($link, $sensorClause);
 
             if ($sensorExists) {
                 $updateModuleSensorQuery = "UPDATE ModuleSensor SET IsActive = $isSensorActive WHERE ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$moduleMac') AND SensorID = $sensorId";
@@ -172,32 +246,16 @@ class Requester
         }
 
         mysqli_free_result($result);
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
     }
 
+    // update or insert new SensorData record with given information
     public function updateSensorData($userId, $sensorId, $chartVisibility, $tableVisibility) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
-
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $sensorClause = "SELECT COUNT(*) as Total FROM SensorData WHERE UserID = $userId AND SensorID = $sensorId";
-        $sensorResult = mysqli_query($link, $sensorClause);
-        $sensorExists = false;
-
-        while ($sensorLine = mysqli_fetch_assoc($sensorResult))
-        {
-            $sensorCount = $sensorLine["Total"];
-            $sensorExists = ($sensorCount == 1);
-        }
-        mysqli_free_result($sensorResult);
+        $sensorExists = $this->isDataExists($link, $sensorClause);
 
         if ($sensorExists) {
 
@@ -225,21 +283,12 @@ class Requester
 
         }
 
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
     }
 
     private function getModuleSensorsData($moduleId) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
-
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $query = "SELECT SensorID, IsActive, Description FROM ModuleSensor WHERE ModuleID = $moduleId";
         $result = mysqli_query($link, $query);
@@ -260,23 +309,14 @@ class Requester
         }
 
         mysqli_free_result($result);
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         return $moduleSensors;
     }
 
     public function getData($query) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
-
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         mysqli_query($link, "SET CHARACTER SET 'utf8'");
         mysqli_query($link, "SET character_set_client = 'utf8'");
@@ -295,30 +335,14 @@ class Requester
         );
 
         mysqli_free_result($result);
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         return $allData;
     }
 
-    private function floatOrNull($value) {
-        if (isset($value))
-            return (float)$value;
-
-        return null;
-    }
-
     private function getRecentModuleWeather($moduleMac) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
-
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $query = "SELECT * FROM WeatherData WHERE ModuleMAC = '$moduleMac' ORDER BY MeasuredDateTime DESC LIMIT 1";
         $result = mysqli_query($link, $query);
@@ -342,9 +366,71 @@ class Requester
         $moduleWeather->CO2 = $this->floatOrNull($line["CO2"]);
 
         mysqli_free_result($result);
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         return $moduleWeather;
+    }
+
+    public function addWeatherData($weatherData) {
+
+        $link = $this->getDatabaseLink();
+
+        $mac = $weatherData->mac;
+
+        $temperature1 = $weatherData->temperature1;
+        $temperature2 = $weatherData->temperature2;
+        $temperature3 = $weatherData->temperature3;
+        $temperature4 = $weatherData->temperature4;
+
+        $humidity1 = $weatherData->humidity1;
+        $humidity2 = $weatherData->humidity2;
+        $humidity3 = $weatherData->humidity3;
+        $humidity4 = $weatherData->humidity4;
+
+        $pressure1 = $weatherData->pressure1;
+        $pressure2 = $weatherData->pressure2;
+        $pressure3 = $weatherData->pressure3;
+        $pressure4 = $weatherData->pressure4;
+
+        $illumination = $weatherData->illumination;
+        $co2level = $weatherData->co2;
+
+        $weatherClause =
+            "INSERT INTO WeatherData ".
+            "(ModuleMAC, Temperature1, Temperature2, Temperature3, Temperature4, Humidity1, Humidity2, Humidity3, Humidity4, Pressure1, Pressure2, Pressure3, Pressure4, Illumination, CO2) ".
+            "VALUES ".
+            "('$mac', $temperature1, $temperature2, $temperature3, $temperature4, $humidity1, $humidity2, $humidity3, $humidity4, $pressure1, $pressure2, $pressure3, $pressure4, $illumination, $co2level)";
+        mysqli_query($link, $weatherClause);
+        $id = mysqli_insert_id($link);
+
+        $this->closeDatabaseLink($link);
+
+        return $id;
+    }
+
+    public function updateModuleData($moduleData) {
+
+        $link = $this->getDatabaseLink();
+
+        $mac = $moduleData->mac;
+        $ip = $moduleData->ip;
+        $moduleName = $moduleData->moduleName;
+        $moduleId = $moduleData->moduleId;
+        $code = $moduleData->code;
+        $delay = $moduleData->delay;
+
+        $moduleClause = "SELECT COUNT(*) as Total FROM WeatherModule where MAC = '$mac'";
+        $moduleExists = $this->isDataExists($link, $moduleClause);
+
+        if ($moduleExists) {
+            $moduleUpdateClause = "UPDATE WeatherModule SET IP = '$ip', ModuleName = '$moduleName', ModuleID = $moduleId, ValidationCode = '$code', SensorDelay = $delay, LastSeenDateTime = CURRENT_TIMESTAMP WHERE MAC = '$mac'";
+            mysqli_query($link, $moduleUpdateClause);
+        } else {
+            $moduleInsertClause = "INSERT INTO WeatherModule (ModuleID, ModuleName, IP, MAC, SensorDelay, ValidationCode) VALUES ($moduleId, '$moduleName', '$ip', '$mac', $delay, '$code')";
+            mysqli_query($link, $moduleInsertClause);
+        }
+
+        $this->closeDatabaseLink($link);
     }
 
     public function getModulesData($params) {
@@ -393,18 +479,10 @@ class Requester
 
     public function getWeatherData($params) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
         global $publicServer;
         global $userSessionVarName;
 
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $macFilter = "1 = 1";
         if ($params->filteredMacs != "") {
@@ -461,23 +539,14 @@ class Requester
         );
 
         mysqli_free_result($result);
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         return $allData;
     }
 
     public function checkUser($email) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
-
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $email = trim($email);
         $query = "SELECT ID FROM WeatherUser WHERE LOWER(Email) = LOWER('$email')";
@@ -486,23 +555,14 @@ class Requester
         $count = mysqli_num_rows($result);
 
         mysqli_free_result($result);
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         return $count;
     }
 
     public function registerUser($email, $password) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
-
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $email = trim($email);
         $password = password_hash(trim($password), PASSWORD_DEFAULT);
@@ -512,7 +572,7 @@ class Requester
         mysqli_query($link, $query);
 
         $id = mysqli_insert_id($link);
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         $this->sendEmail($email, "Регистрация на сайте Домашней метеостанции",
             "Для окончания регистрации введите код валидации<br/><b>$code</b><br/>в личном кабинете пользователя в течение трёх дней.");
@@ -522,17 +582,9 @@ class Requester
 
     public function loginUser($email, $password, $setCookie) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
         global $userSessionVarName;
 
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $email = trim($email);
         $password = trim($password);
@@ -565,24 +617,16 @@ class Requester
             }
         }
 
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         return $result;
     }
 
     public function validateUser($code) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
         global $userSessionVarName;
 
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $query = "UPDATE WeatherUser SET IsActive = 1, VerifiedDateTime = CURRENT_TIMESTAMP WHERE VerificationCode = '$code'";
         mysqli_query($link, $query);
@@ -596,35 +640,17 @@ class Requester
             $_SESSION[$userSessionVarName]->isActive = $databaseIsActive;
         }
 
-        mysqli_close($link);
-    }
-
-    private function createSessionUser($userId, $userName, $verificationCode, $email, $isActive) {
-        $sessionData = (object)[];
-        $sessionData->userName = $userName;
-        $sessionData->userEmail = $email;
-        $sessionData->verificationCode = $verificationCode;
-        $sessionData->isActive = $isActive;
-        $sessionData->userId = $userId;
-        return $sessionData;
+        $this->closeDatabaseLink($link);
     }
 
     public function validateCookie($cookieHash) {
 
-        global $databaseHost;
-        global $databaseName;
-        global $databaseLogin;
-        global $databasePassword;
         global $userSessionVarName;
 
         $validationResult = false;
         $ip = $_SERVER['REMOTE_ADDR'];
 
-        $link = mysqli_connect($databaseHost, $databaseLogin, $databasePassword, $databaseName);
-        if (mysqli_connect_errno() != 0)
-        {
-            die("Could not connect: " . mysqli_connect_error());
-        }
+        $link = $this->getDatabaseLink();
 
         $query = "SELECT ID, UserName, VerificationCode, Email, IsActive from WeatherUser";
         $result = mysqli_query($link, $query);
@@ -653,41 +679,9 @@ class Requester
             }
         }
 
-        mysqli_close($link);
+        $this->closeDatabaseLink($link);
 
         return $validationResult;
-    }
-
-    private function sendEmail($to, $subject, $text) {
-
-        global $emailLogin;
-        global $emailPassword;
-        global $emailServer;
-        global $emailFrom;
-
-        $mail = new PHPMailer;
-
-        $mail->isSMTP();                                      // Set mailer to use SMTP
-        $mail->Host = $emailServer;                           // Specify main and backup SMTP servers
-        $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = $emailLogin;                        // SMTP username
-        $mail->Password = $emailPassword;                     // SMTP password
-        $mail->Port = 25;                                     // TCP port to connect to
-
-        $mail->setFrom($emailFrom, 'Домашняя метеостанция');
-        $mail->addAddress($to, $to);                          // Add a recipient
-
-        $mail->isHTML(true);                                  // Set email format to HTML
-
-        $mail->Subject = $subject;
-        $mail->Body    = $text;
-        $mail->CharSet = 'utf-8';
-
-        if(!$mail->send()) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
 }
