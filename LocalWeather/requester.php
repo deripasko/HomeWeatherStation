@@ -543,7 +543,6 @@ class Requester
             "sortAscending" => $params->sortAscending == "ASC",
             "pageIndex" => $params->pageIndex,
             "pageSize" => $params->pageSize,
-            "filteredMacs" => $params->filteredMacs,
             "rowsCount" => (int)$rowsCount
         );
 
