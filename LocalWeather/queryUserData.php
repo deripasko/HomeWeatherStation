@@ -45,7 +45,7 @@ if ($action == "login") {
 if ($action == "validate") {
     $code = $_REQUEST["code"];
     $requester->validateUser($code);
-    $allData = $requester->getData("SELECT IsActive FROM WeatherUser WHERE VerificationCode = '$code'");
+    $allData = $requester->getData("SELECT IsActive FROM WeatherUser WHERE VerificationCode = '$code'", false);
 }
 
 print json_encode($allData, JSON_UNESCAPED_UNICODE);

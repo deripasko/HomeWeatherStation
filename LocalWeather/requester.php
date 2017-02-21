@@ -297,8 +297,8 @@ class Requester
         while ($line = mysqli_fetch_assoc($result))
         {
             $sensorId = $line["SensorID"];
-            $description = $line["Description"];
             $isActive = $line["IsActive"];
+            $description = $line["Description"];
 
             $moduleSensor = (object) [];
             $moduleSensor->sensorId = (int)$sensorId;
@@ -314,7 +314,7 @@ class Requester
         return $moduleSensors;
     }
 
-    public function getData($query) {
+    public function getData($query, $appendFieldsMetadata = true) {
 
         $link = $this->getDatabaseLink();
 
@@ -329,10 +329,11 @@ class Requester
         $fieldsArray = $this->getFieldsArray($result);
         $dataArray = $this->getDataArray($result, $fieldsArray);
 
-        $allData = array(
-            "fields" => $fieldsArray,
-            "data" => $dataArray
-        );
+        $allData = (object) [];
+        $allData->data = $dataArray;
+        if ($appendFieldsMetadata) {
+            $allData->fields = $fieldsArray;
+        }
 
         mysqli_free_result($result);
         $this->closeDatabaseLink($link);
@@ -441,8 +442,9 @@ class Requester
         if ($params->getModuleSensors) {
 
             $moduleSensorsData = array();
-            for ($i = 0; $i < count($modulesData["data"]); $i++) {
-                $data = $modulesData["data"][$i];
+            for ($i = 0; $i < count($modulesData->data); $i++) {
+
+                $data = $modulesData->data[$i];
                 $moduleId = $data->ModuleID;
 
                 $moduleSensorProxy = (object)[];
@@ -451,14 +453,15 @@ class Requester
 
                 array_push($moduleSensorsData, $moduleSensorProxy);
             }
-            $modulesData["moduleSensors"] = $moduleSensorsData;
+            $modulesData->moduleSensors = $moduleSensorsData;
         }
 
         if ($params->getModuleWeather) {
 
             $moduleWeatherData = array();
-            for ($i = 0; $i < count($modulesData["data"]); $i++) {
-                $data = $modulesData["data"][$i];
+            for ($i = 0; $i < count($modulesData->data); $i++) {
+
+                $data = $modulesData->data[$i];
                 $moduleMac = $data->MAC;
                 $moduleId = $data->ModuleID;
 
@@ -468,11 +471,11 @@ class Requester
 
                 array_push($moduleWeatherData, $moduleWeatherProxy);
             }
-            $modulesData["moduleWeather"] = $moduleWeatherData;
+            $modulesData->moduleWeather = $moduleWeatherData;
 
         }
 
-        $modulesData["ServerDateTime"] = date("Y-m-d G:i:s");
+        $modulesData->ServerDateTime = date("Y-m-d G:i:s");
 
         return $modulesData;
     }

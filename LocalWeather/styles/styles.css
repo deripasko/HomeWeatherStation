@@ -531,3 +531,14 @@ hr {
 .unitSpan {
     font-size: 80%;
 }
+
+.editSensorDescriptionIcon {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.editSensorDescriptionInput {
+    margin-left: 10px;
+    height: 20px;
+    color: black;
+}

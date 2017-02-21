@@ -16,28 +16,45 @@ if ($publicServer) {
 
 include_once("requester.php");
 
-$sensorId = (int)$_REQUEST["id"];
-
 global $userSessionVarName;
 $userId = $_SESSION[$userSessionVarName]->userId;
 
-$chartVisibility = null;
-$tableVisibility = null;
+$allData = (object) [];
 
 $requester = new Requester;
 
-if (isset($_REQUEST["chartVisibility"])) {
-    $chartVisibility = (int)$_REQUEST["chartVisibility"];
+$sensorId = null;
+if (isset($_REQUEST["sensorId"])) {
+    $sensorId = (int)$_REQUEST["sensorId"];
 }
 
-if (isset($_REQUEST["tableVisibility"])) {
-    $tableVisibility = (int)$_REQUEST["tableVisibility"];
+if (isset($_REQUEST["description"])) {
+
+    $mac = $_REQUEST["mac"];
+    $description = $_REQUEST["description"];
+    $description = iconv('utf-8', 'windows-1251', $description);
+
+    $requester->updateData("UPDATE ModuleSensor SET Description = '$description' WHERE SensorID = $sensorId AND ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$mac')");
+    $allData->moduleSensors = $requester->getData("SELECT SensorID, Description FROM ModuleSensor WHERE SensorID = $sensorId AND ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$mac')");
+
+} else {
+
+    $chartVisibility = null;
+    $tableVisibility = null;
+
+    if (isset($_REQUEST["chartVisibility"])) {
+        $chartVisibility = (int)$_REQUEST["chartVisibility"];
+    }
+
+    if (isset($_REQUEST["tableVisibility"])) {
+        $tableVisibility = (int)$_REQUEST["tableVisibility"];
+    }
+
+    $requester->updateSensorData($userId, $sensorId, $chartVisibility, $tableVisibility);
+    $allData->sensorsData = $requester->getData("SELECT SensorID, TableVisibility, ChartVisibility FROM SensorData");
+
 }
 
-$requester->updateSensorData($userId, $sensorId, $chartVisibility, $tableVisibility);
-
-$allData = (object) [];
-$allData->sensorsData = $requester->getData("SELECT SensorID, TableVisibility, ChartVisibility FROM SensorData");
 print json_encode($allData, JSON_UNESCAPED_UNICODE);
 
 ?>
