@@ -345,12 +345,13 @@ class Requester
 
         $link = $this->getDatabaseLink();
 
-        $query = "SELECT * FROM WeatherData WHERE ModuleMAC = '$moduleMac' ORDER BY MeasuredDateTime DESC LIMIT 1";
+        $query = "SELECT * FROM WeatherData WHERE ModuleMAC = '$moduleMac' AND ID = (SELECT MAX(ID) FROM WeatherData WHERE ModuleMAC = '$moduleMac')";
         $result = mysqli_query($link, $query);
 
         $moduleWeather = (object) [];
 
         $line = mysqli_fetch_assoc($result);
+        $moduleWeather->ID = $line["ID"];
         $moduleWeather->Temperature1 = $this->floatOrNull($line["Temperature1"]);
         $moduleWeather->Temperature2 = $this->floatOrNull($line["Temperature2"]);
         $moduleWeather->Temperature3 = $this->floatOrNull($line["Temperature3"]);
@@ -446,12 +447,15 @@ class Requester
 
                 $data = $modulesData->data[$i];
                 $moduleId = $data->ModuleID;
+                $isActive = $data->IsActive;
 
-                $moduleSensorProxy = (object)[];
-                $moduleSensorProxy->sensors = $this->getModuleSensorsData($moduleId);
-                $moduleSensorProxy->moduleId = $moduleId;
+                if ($isActive) {
+                    $moduleSensorProxy = (object)[];
+                    $moduleSensorProxy->sensors = $this->getModuleSensorsData($moduleId);
+                    $moduleSensorProxy->moduleId = $moduleId;
 
-                array_push($moduleSensorsData, $moduleSensorProxy);
+                    array_push($moduleSensorsData, $moduleSensorProxy);
+                }
             }
             $modulesData->moduleSensors = $moduleSensorsData;
         }
@@ -464,12 +468,15 @@ class Requester
                 $data = $modulesData->data[$i];
                 $moduleMac = $data->MAC;
                 $moduleId = $data->ModuleID;
+                $isActive = $data->IsActive;
 
-                $moduleWeatherProxy = (object)[];
-                $moduleWeatherProxy->weather = $this->getRecentModuleWeather($moduleMac);
-                $moduleWeatherProxy->moduleId = $moduleId;
+                if ($isActive) {
+                    $moduleWeatherProxy = (object)[];
+                    $moduleWeatherProxy->weather = $this->getRecentModuleWeather($moduleMac);
+                    $moduleWeatherProxy->moduleId = $moduleId;
 
-                array_push($moduleWeatherData, $moduleWeatherProxy);
+                    array_push($moduleWeatherData, $moduleWeatherProxy);
+                }
             }
             $modulesData->moduleWeather = $moduleWeatherData;
 
