@@ -345,7 +345,7 @@ class Requester
 
         $link = $this->getDatabaseLink();
 
-        $query = "SELECT * FROM WeatherData WHERE ModuleMAC = '$moduleMac' AND ID = (SELECT MAX(ID) FROM WeatherData WHERE ModuleMAC = '$moduleMac')";
+        $query = "SELECT * FROM WeatherData WHERE ModuleMAC = '$moduleMac' ORDER BY ID DESC LIMIT 1";
         $result = mysqli_query($link, $query);
 
         $moduleWeather = (object) [];
