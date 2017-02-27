@@ -522,7 +522,7 @@ class Requester
                      " wd.Pressure1, wd.Pressure2, wd.Pressure3, wd.Pressure4,".
                      " wd.Illumination, wd.CO2, wd.MeasuredDateTime".
                      " FROM WeatherData wd".
-                     " JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE $macFilter AND $whereClause ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
+                     " JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE $macFilter ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
         } else {
             // called from Charts page
             $query = "SELECT wd.* FROM WeatherData wd JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE DATE_SUB(NOW(), INTERVAL $params->interval) < MeasuredDateTime AND $macFilter AND $whereClause";
@@ -553,7 +553,8 @@ class Requester
             "sortAscending" => $params->sortAscending == "ASC",
             "pageIndex" => $params->pageIndex,
             "pageSize" => $params->pageSize,
-            "rowsCount" => (int)$rowsCount
+            "rowsCount" => (int)$rowsCount,
+            "query" => $query
         );
 
         mysqli_free_result($result);

@@ -103,7 +103,7 @@ $requester->updateModuleData($moduleData);
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-$createFakeData = true;
+$createFakeData = false;
 if ($createFakeData) {
 
     $savedTemperature = $weatherData->temperature1;
