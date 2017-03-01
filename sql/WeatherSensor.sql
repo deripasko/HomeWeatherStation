@@ -1,11 +1,12 @@
+﻿DROP TABLE IF EXISTS WeatherSensor;
 
-CREATE TABLE IF NOT EXISTS 'WeatherSensor' (
-  'ID' int(11) NOT NULL,
-  'SensorName' varchar(50) NOT NULL,
-  'Description' varchar(50) DEFAULT NULL,
-  'Units' varchar(50) DEFAULT NULL,
-  'ChartTitle' varchar(50) DEFAULT NULL,
-  'SortOrder' int(11) DEFAULT NULL
+CREATE TABLE IF NOT EXISTS WeatherSensor (
+  ID int(11) NOT NULL,
+  SensorName varchar(50) NOT NULL,
+  Description varchar(50) DEFAULT NULL,
+  Units varchar(50) DEFAULT NULL,
+  ChartTitle varchar(50) DEFAULT NULL,
+  SortOrder int(11) DEFAULT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 INSERT INTO `WeatherSensor`(`ID`, `SensorName`, `Description`, `Units`, `ChartTitle`, `SortOrder`) VALUES
@@ -22,10 +23,10 @@ INSERT INTO `WeatherSensor`(`ID`, `SensorName`, `Description`, `Units`, `ChartTi
 (11, 'Pressure3', 'Давление 3', 'mmHg', 'Атмосферное давление (mmHg)', 11),
 (12, 'Pressure4', 'Давление 4', 'mmHg', 'Атмосферное давление (mmHg)', 12),
 (13, 'Illumination', 'Освещенность', 'lx', 'Освещенность (lx)', 13),
-(14, 'CO2', 'Уровень CO2', 'ppm', 'Уровень CO2', 14)
+(14, 'CO2', 'Уровень CO2', 'ppm', 'Уровень CO2', 14);
 
-ALTER TABLE 'WeatherSensor'
-  ADD PRIMARY KEY ('ID');
+ALTER TABLE WeatherSensor
+  ADD PRIMARY KEY (ID);
 
-ALTER TABLE 'WeatherSensor'
-  MODIFY 'ID' int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE WeatherSensor
+  MODIFY ID int(11) NOT NULL AUTO_INCREMENT;

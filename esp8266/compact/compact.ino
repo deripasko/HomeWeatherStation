@@ -281,8 +281,6 @@ void handleWiFiEvent(WiFiEvent_t event)
     }
 }
 
-int ledState = 0;
-
 int connectWiFi()
 {
     Serial.println("Wifi: connecting");
@@ -291,8 +289,10 @@ int connectWiFi()
 
     while (connectAttempts < maxConnectAttempts)
     {
-        ledState = ledState == 0 ? 1024 : 0;
-        analogWrite(4, ledState);
+        analogWrite(4, 1024);
+        delay(50);
+        analogWrite(4, 0);
+
         Serial.printf("Wifi: connecting, attempt %d\r\n", connectAttempts);
         if (WiFi.status() == WL_CONNECTED)
         {
@@ -300,7 +300,7 @@ int connectWiFi()
             return 1;
         }
 
-        delay(500);
+        delay(450);
         connectAttempts++;
 
         yield();
@@ -345,7 +345,7 @@ void initWiFi()
 
     if (WiFi.status() == WL_CONNECTED)
     {
-        Serial.println(String("Wifi: connected, creating AP ") + config.module_name);
+        Serial.println(String("Wifi: connected, creating AP '") + config.module_name + "'");
         WiFi.softAP(config.module_name, "temppassword");
         Serial.print("Wifi: connected, IP = ");
         Serial.print(WiFi.localIP());
@@ -355,22 +355,6 @@ void initWiFi()
     {
         Serial.println(String("Wifi: not connected, creating AP '") + config.module_name + "'");
         WiFi.mode(WIFI_AP);
-        
-        wifi_set_phy_mode((phy_mode_t)PHY_MODE_11B);
-
-        struct softap_config apconfig;
-        wifi_softap_get_config(&apconfig);        
-        apconfig.channel = 1;
-        apconfig.authmode = (AUTH_MODE)AUTH_WPA_PSK;
-        apconfig.ssid_hidden = 0;
-        if (!wifi_softap_set_config(&apconfig) || !wifi_softap_set_config_current(&apconfig))
-        {
-            Serial.println("WiFi: error while setting up AP");
-        }
-
-        Serial.println("WiFi: diag");
-        WiFi.printDiag(Serial);
-
         WiFi.softAP(config.module_name, "temppassword");
         Serial.print("Wifi: created AP with IP = ");
         Serial.print(WiFi.softAPIP());
