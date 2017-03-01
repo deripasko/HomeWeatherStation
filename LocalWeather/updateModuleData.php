@@ -17,6 +17,7 @@ if ($publicServer) {
 include_once("requester.php");
 
 $mac = $_REQUEST["mac"];
+global $userSessionVarName;
 
 $requester = new Requester;
 

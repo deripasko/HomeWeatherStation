@@ -134,6 +134,12 @@ class Requester
             die("Could not connect: " . mysqli_connect_error());
         }
 
+        mysqli_query($link, "SET CHARACTER SET 'utf8'");
+        mysqli_query($link, "SET character_set_client = 'utf8'");
+        mysqli_query($link, "SET character_set_results = 'utf8'");
+        mysqli_query($link, "SET collation_connection = 'utf8_general_ci'");
+        mysqli_query($link, "SET NAMES utf8");
+
         return $link;
     }
 
@@ -290,7 +296,7 @@ class Requester
 
         $link = $this->getDatabaseLink();
 
-        $query = "SELECT SensorID, IsActive, Description FROM ModuleSensor WHERE ModuleID = $moduleId";
+        $query = "SELECT ID, SensorID, IsActive, Description FROM ModuleSensor WHERE ModuleID = $moduleId";
         $result = mysqli_query($link, $query);
 
         $moduleSensors = array();
@@ -314,15 +320,9 @@ class Requester
         return $moduleSensors;
     }
 
-    public function getData($query, $appendFieldsMetadata = true) {
+    public function getData($query, $appendFieldsMetadata = false) {
 
         $link = $this->getDatabaseLink();
-
-        mysqli_query($link, "SET CHARACTER SET 'utf8'");
-        mysqli_query($link, "SET character_set_client = 'utf8'");
-        mysqli_query($link, "SET character_set_results = 'utf8'");
-        mysqli_query($link, "SET collation_connection = 'utf8_general_ci'");
-        mysqli_query($link, "SET NAMES utf8");
 
         $result = mysqli_query($link, $query);
 

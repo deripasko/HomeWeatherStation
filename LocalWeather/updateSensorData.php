@@ -30,14 +30,18 @@ if (isset($_REQUEST["sensorId"])) {
 
 if (isset($_REQUEST["description"])) {
 
+    // called from Setup page
+
     $mac = $_REQUEST["mac"];
     $description = $_REQUEST["description"];
     $description = iconv('utf-8', 'windows-1251', $description);
 
     $requester->updateData("UPDATE ModuleSensor SET Description = '$description' WHERE SensorID = $sensorId AND ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$mac')");
-    $allData->moduleSensors = $requester->getData("SELECT SensorID, Description FROM ModuleSensor WHERE SensorID = $sensorId AND ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$mac')");
+    $allData->moduleSensors = $requester->getData("SELECT ID, SensorID, Description FROM ModuleSensor WHERE SensorID = $sensorId AND ModuleID = (SELECT ModuleID FROM WeatherModule WHERE MAC = '$mac')");
 
 } else {
+
+    // called from Data or Charts pages
 
     $chartVisibility = null;
     $tableVisibility = null;

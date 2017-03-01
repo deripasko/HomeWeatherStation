@@ -28,11 +28,11 @@ $allData = (object) [];
 $requester = new Requester;
 
 if ($getSensors) {
-    $allData->sensors = $requester->getData("SELECT * FROM WeatherSensor ORDER BY SortOrder", false);
+    $allData->sensors = $requester->getData("SELECT * FROM WeatherSensor ORDER BY SortOrder");
 }
 
 if ($getSensorsData) {
-    $allData->sensorsData = $requester->getData("SELECT SensorID, TableVisibility, ChartVisibility FROM SensorData", false);
+    $allData->sensorsData = $requester->getData("SELECT SensorID, TableVisibility, ChartVisibility FROM SensorData");
 }
 
 if ($getModules) {
