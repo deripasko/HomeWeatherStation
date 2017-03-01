@@ -493,11 +493,13 @@ class Requester
         global $userSessionVarName;
 
         $link = $this->getDatabaseLink();
-        $verificationCode = $_SESSION[$userSessionVarName]->verificationCode;
 
         $macByUserFilter = "1 = 1";
+        $whereClause = "1 = 1";
         if ($publicServer) {
+            $verificationCode = $_SESSION[$userSessionVarName]->verificationCode;
             $macByUserFilter = "ValidationCode = '$verificationCode'";
+            $whereClause = "wm.ValidationCode = '$verificationCode'";
         }
 
         $macByPageFilter = "";
@@ -515,11 +517,6 @@ class Requester
         mysqli_free_result($macResult);
 
         $macFilter = "LOCATE(wd.ModuleMAC, '$allMacs') > 0";
-
-        $whereClause = "1 = 1";
-        if ($publicServer) {
-            $whereClause = "wm.ValidationCode = '$verificationCode'";
-        }
 
         if ($params->queryType == "all") {
             // called from Data page

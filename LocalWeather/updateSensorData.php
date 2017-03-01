@@ -8,6 +8,9 @@ include_once("include/common.php");
 if (!isset($_SESSION))
     session_start();
 
+global $publicServer;
+global $userSessionVarName;
+
 if ($publicServer) {
     if (!checkUser()) {
         exit();
@@ -16,8 +19,10 @@ if ($publicServer) {
 
 include_once("requester.php");
 
-global $userSessionVarName;
-$userId = $_SESSION[$userSessionVarName]->userId;
+$userId = 1;
+if ($publicServer) {
+    $userId = $_SESSION[$userSessionVarName]->userId;
+}
 
 $allData = (object) [];
 
