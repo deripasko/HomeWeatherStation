@@ -493,20 +493,28 @@ class Requester
         global $userSessionVarName;
 
         $link = $this->getDatabaseLink();
-
         $verificationCode = $_SESSION[$userSessionVarName]->verificationCode;
-        $macFilterAddition = "1 = 1";
-        $macFilterWhere = "";
+
+        $macByUserFilter = "1 = 1";
         if ($publicServer) {
-            $macFilterAddition = "ValidationCode = '$verificationCode'";
+            $macByUserFilter = "ValidationCode = '$verificationCode'";
         }
+
+        $macByPageFilter = "";
         if ($params->fromDataPage == 1) {
-            $macFilterWhere = "TableVisibility = 1";
+            $macByPageFilter = "TableVisibility = 1";
         }
         if ($params->fromChartsPage == 1) {
-            $macFilterWhere = "ChartVisibility = 1";
+            $macByPageFilter = "ChartVisibility = 1";
         }
-        $macFilter = "wd.ModuleMAC IN (SELECT MAC FROM WeatherModule WHERE $macFilterWhere AND $macFilterAddition AND IsActive = 1)";
+
+        $macClause = "SELECT GROUP_CONCAT(MAC separator ',') as MACS FROM WeatherModule WHERE $macByPageFilter AND $macByUserFilter AND IsActive = 1";
+        $macResult = mysqli_query($link, $macClause);
+        $macLine = mysqli_fetch_assoc($macResult);
+        $allMacs = $macLine["MACS"];
+        mysqli_free_result($macResult);
+
+        $macFilter = "LOCATE(wd.ModuleMAC, '$allMacs') > 0";
 
         $whereClause = "1 = 1";
         if ($publicServer) {
@@ -514,15 +522,15 @@ class Requester
         }
 
         if ($params->queryType == "all") {
-            // called from Datas page
+            // called from Data page
             $rowsToSkip = $params->pageIndex * $params->pageSize;
-            $query = "SELECT SQL_CALC_FOUND_ROWS wd.ID, wm.MAC, wm.ModuleName, wm.ModuleID, wm.Description,".
+            $query = "SELECT SQL_CALC_FOUND_ROWS wd.ID, wd.ModuleMAC,".
                      " wd.Temperature1, wd.Temperature2, wd.Temperature3, wd.Temperature4,".
                      " wd.Humidity1, wd.Humidity2, wd.Humidity3, wd.Humidity4,".
                      " wd.Pressure1, wd.Pressure2, wd.Pressure3, wd.Pressure4,".
                      " wd.Illumination, wd.CO2, wd.MeasuredDateTime".
                      " FROM WeatherData wd".
-                     " JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE $macFilter ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
+                     " WHERE $macFilter ORDER BY $params->sortBy $params->sortAscending LIMIT $rowsToSkip, $params->pageSize";
         } else {
             // called from Charts page
             $query = "SELECT wd.* FROM WeatherData wd JOIN WeatherModule wm ON wm.MAC = wd.ModuleMAC WHERE DATE_SUB(NOW(), INTERVAL $params->interval) < MeasuredDateTime AND $macFilter AND $whereClause";
@@ -535,6 +543,7 @@ class Requester
 
         $fieldsArray = $this->getFieldsArray($result);
         $dataArray = $this->getDataArray($result, $fieldsArray);
+        mysqli_free_result($result);
 
         $rowsCount = 0;
         while ($line = mysqli_fetch_assoc($resultRowsCount))
@@ -545,9 +554,9 @@ class Requester
                 break;
             }
         }
+        mysqli_free_result($resultRowsCount);
 
         $allData = array(
-            "fields" => $fieldsArray,
             "data" => $dataArray,
             "sortBy" => $params->sortBy,
             "sortAscending" => $params->sortAscending == "ASC",
@@ -557,7 +566,6 @@ class Requester
             "query" => $query
         );
 
-        mysqli_free_result($result);
         $this->closeDatabaseLink($link);
 
         return $allData;
