@@ -2,7 +2,6 @@
 #define COMMON_H
 
 #include <Arduino.h>
-#include <RTClib.h>
 #include <ESP8266WiFi.h>
 #include <IPAddress.h>
 

@@ -390,7 +390,6 @@ void setup()
 
     Serial.println("\r\nStarting module...");
 
-    SPIFFS.format();
     if (!SPIFFS.begin())
     {
         Serial.println("Config: failed to mount file system");
