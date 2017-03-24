@@ -61,26 +61,30 @@ serverSocket.on('message', function (msg, rinfo) {
             var humidity = data['humidity'] ? data['humidity'] / 100.0 : 0;
             var short_id = json["short_id"];
             console.log("Step 5. Got \x1b[32mtemperature/humidity sensor\x1b[0m: \x1b[31m%s\x1b[0m's (short_id: %s) data: temperature %d, humidity %d\n", json['sid'], short_id, temperature, humidity);
+
             request({
-                uri: "http://192.168.1.44/aqara.php",
-                method: "POST",
-                form: {
-                    "aqara": "1",
-                    "moduleid": short_id,
-                    "modulename": json['sid'],
-                    "code": "0000000000000000",
-                    "temperature1": temperature + "",
-                    "humidity1": humidity + "",
-                    "ip": "192.168.1.57",
-                    "mac": short_id,
-                    "delay": 10
+                url: 'http://192.168.1.44/aqara.php',
+                method: 'GET',
+                qs: {
+                        "aqara": "1",
+                        "moduleid": short_id,
+                        "modulename": json['sid'],
+                        "code": "0000000000000000",
+                        "temperature1": temperature,
+                        "humidity1": humidity,
+                        "ip": "192.168.1.57",
+                        "mac": short_id,
+                        "delay": 10
+                    }
                 },
-                headers: {
-                   'Content-Type': 'application/json'
+                function(error, response, body)
+                {
+                    if (error)
+                    {
+                        console.log(error);
+                    }
                 }
-            }, function(error, response, body) {
-                console.log(error, body);
-            });
+            );
         }
         else if (model === 'motion')
         {

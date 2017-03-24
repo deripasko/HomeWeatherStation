@@ -23,7 +23,7 @@ $id = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-$object = json_decode($_POST, true);
+$object = $_REQUEST;
 
 $moduleId = (int)getParam($object, "moduleid");
 $moduleName = getParam($object, "modulename");
