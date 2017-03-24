@@ -33,6 +33,8 @@ $ip = getParam($object, "ip");
 $mac = getParam($object, "mac");
 $delay = (int)getParam($object, "delay");
 
+$isAqara = valueOrNull((int)getParam($object, "isaqara"));
+
 $temperature1 = valueOrNull((float)getParam($object, "temperature1"));
 $humidity1 = valueOrNull((float)getParam($object, "humidity1"));
 $pressure1 = valueOrNull((float)getParam($object, "pressure1"));
@@ -80,6 +82,7 @@ $moduleData->moduleName = $moduleName;
 $moduleData->moduleId = $moduleId;
 $moduleData->code = $code;
 $moduleData->delay = $delay;
+$moduleData->isAqara = $isAqara;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 

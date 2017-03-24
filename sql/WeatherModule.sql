@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS WeatherModule (
   ModuleName varchar(50) NOT NULL,
   MAC varchar(50) NOT NULL,
   IP varchar(15) NOT NULL,
+  IsAqara bit(1) DEFAULT NULL,
   Description text,
   SensorDelay int(11) DEFAULT NULL,
   LastSeenDateTime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -420,15 +420,16 @@ class Requester
         $moduleId = $moduleData->moduleId;
         $code = $moduleData->code;
         $delay = $moduleData->delay;
+        $isAqara = $moduleData->isAqara;
 
         $moduleClause = "SELECT COUNT(*) as Total FROM WeatherModule where MAC = '$mac'";
         $moduleExists = $this->isDataExists($link, $moduleClause);
 
         if ($moduleExists) {
-            $moduleUpdateClause = "UPDATE WeatherModule SET IP = '$ip', ModuleName = '$moduleName', ModuleID = $moduleId, ValidationCode = '$code', SensorDelay = $delay, LastSeenDateTime = CURRENT_TIMESTAMP WHERE MAC = '$mac'";
+            $moduleUpdateClause = "UPDATE WeatherModule SET IP = '$ip', ModuleName = '$moduleName', ModuleID = $moduleId, IsAqara = $isAqara, ValidationCode = '$code', SensorDelay = $delay, LastSeenDateTime = CURRENT_TIMESTAMP WHERE MAC = '$mac'";
             mysqli_query($link, $moduleUpdateClause);
         } else {
-            $moduleInsertClause = "INSERT INTO WeatherModule (ModuleID, ModuleName, IP, MAC, SensorDelay, ValidationCode) VALUES ($moduleId, '$moduleName', '$ip', '$mac', $delay, '$code')";
+            $moduleInsertClause = "INSERT INTO WeatherModule (ModuleID, ModuleName, IP, MAC, SensorDelay, ValidationCode, IsAqara) VALUES ($moduleId, '$moduleName', '$ip', '$mac', $delay, '$code', $isAqara)";
             mysqli_query($link, $moduleInsertClause);
         }
 

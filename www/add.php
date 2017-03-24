@@ -19,11 +19,6 @@ function valueOrNull($value)
     return $value;
 }
 
-function randForValue($value)
-{
-    return $value + mt_rand() / mt_getrandmax();
-}
-
 $id = 0;
 $input = file_get_contents('php://input');
 
@@ -46,6 +41,8 @@ $code = getParam($object, "code");
 $ip = getParam($object, "ip");
 $mac = getParam($object, "mac");
 $delay = (int)getParam($object, "delay");
+
+$isAqara = valueOrNull((int)getParam($object, "isaqara"));
 
 $temperature1 = valueOrNull((float)getParam($object, "temperature1"));
 $humidity1 = valueOrNull((float)getParam($object, "humidity1"));
@@ -94,174 +91,13 @@ $moduleData->moduleName = $moduleName;
 $moduleData->moduleId = $moduleId;
 $moduleData->code = $code;
 $moduleData->delay = $delay;
+$moduleData->isAqara = $isAqara;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 $requester = new Requester;
 $id = $requester->addWeatherData($weatherData);
 $requester->updateModuleData($moduleData);
-
-////////////////////////////////////////////////////////////////////////////////////////////
-
-$createFakeData = false;
-if ($createFakeData) {
-
-    $savedTemperature = $weatherData->temperature1;
-    $savedHumidity = $weatherData->humidity1;
-
-    $moduleData->ip = "192.168.1.136";
-    $moduleData->mac = "18:fe:34:d6:0f:75";
-    $moduleData->moduleName = "fake1";
-    $moduleData->moduleId = 400;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.137";
-    $moduleData->mac = "18:fe:34:d6:0f:76";
-    $moduleData->moduleName = "fake2";
-    $moduleData->moduleId = 401;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.138";
-    $moduleData->mac = "18:fe:34:d6:0f:77";
-    $moduleData->moduleName = "fake3";
-    $moduleData->moduleId = 402;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.139";
-    $moduleData->mac = "18:fe:34:d6:0f:78";
-    $moduleData->moduleName = "fake4";
-    $moduleData->moduleId = 403;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.140";
-    $moduleData->mac = "18:fe:34:d6:0f:79";
-    $moduleData->moduleName = "fake5";
-    $moduleData->moduleId = 404;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.141";
-    $moduleData->mac = "18:fe:34:d6:0f:80";
-    $moduleData->moduleName = "fake6";
-    $moduleData->moduleId = 405;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.142";
-    $moduleData->mac = "18:fe:34:d6:0f:81";
-    $moduleData->moduleName = "fake7";
-    $moduleData->moduleId = 406;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.143";
-    $moduleData->mac = "18:fe:34:d6:0f:82";
-    $moduleData->moduleName = "fake8";
-    $moduleData->moduleId = 407;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-
-    $moduleData->ip = "192.168.1.144";
-    $moduleData->mac = "18:fe:34:d6:0f:83";
-    $moduleData->moduleName = "fake9";
-    $moduleData->moduleId = 408;
-    $requester->updateModuleData($moduleData);
-
-    $weatherData->mac = $moduleData->mac;
-    $weatherData->temperature1 = randForValue($savedTemperature);
-    $weatherData->temperature2 = randForValue($savedTemperature);
-    $weatherData->temperature3 = randForValue($savedTemperature);
-    $weatherData->temperature4 = randForValue($savedTemperature);
-    $weatherData->humidity1 = randForValue($savedHumidity);
-    $weatherData->humidity2 = randForValue($savedHumidity);
-    $weatherData->humidity3 = randForValue($savedHumidity);
-    $weatherData->humidity4 = randForValue($savedHumidity);
-    $requester->addWeatherData($weatherData);
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
