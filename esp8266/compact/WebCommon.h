@@ -9,7 +9,6 @@ const char stylesInclude[] PROGMEM = "<link rel='stylesheet' type='text/css' hre
 const char mainMenu[] PROGMEM = "<div class='header'><ul>\
 <li><a href='/'>Home</a></li>\
 <li><a href='/setup'>Setup</a></li>\
-<li><a href='/time'>Time</a></li>\
 <li><a href='/sensors'>Sensors</a></li>\
 <li><a class='reboot' href='/reboot?reboot_delay=%d'>Reboot</a></li>\
 </ul></div>";

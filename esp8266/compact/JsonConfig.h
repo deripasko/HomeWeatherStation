@@ -49,7 +49,17 @@ public:
     char reboot_delay[5] = "10";
 
     // if using sensor - set to 1, instead set to 0
+    char sensor_bmp180_on[2] = "1";
+    // if using sensor - set to 1, instead set to 0
     char sensor_dht22_on[2] = "1";
+    // if using sensor - set to 1, instead set to 0
+    char sensor_sht21_on[2] = "1";
+    // if using sensor - set to 1, instead set to 0
+    char sensor_bh1750_on[2] = "1";
+    // if using sensor - set to 1, instead set to 0
+    char sensor_co2_on[2] = "1";
+    // if using sensor - set to 1, instead set to 0
+    char sensor_bme280_on[2] = "1";
 
     // address to push module data
     char add_data_url[200] = "http://note4me.ru/add.php";
