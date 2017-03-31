@@ -416,7 +416,7 @@ int connectWiFi()
 
 void initWiFi()
 {
-    Serial.println("Wifi: starting");
+    Serial.println("\r\nWifi: starting");
 
     delay(1000);
     WiFi.mode(WIFI_AP_STA);
@@ -578,33 +578,49 @@ void initBme280()
 
 void initSensors()
 {
+    Serial.println("\r\nSensors: starting");
+
+    Wire.begin(0, 2);
+
     if (atoi(config.sensor_dht22_on) == 1)
     {
+        Serial.println("Sensors: DHT22 starting");
         dht22.begin();
+        Serial.println("Sensors: DHT22 started");
     }
 
     if (atoi(config.sensor_bmp180_on) == 1)
     {
+        Serial.println("Sensors: BMP180 starting");
         if (bmp180.begin())
         {
             bmp180initialized = true;
+            Serial.println("Sensors: BMP180 started");
         }
     }
 
     if (atoi(config.sensor_sht21_on) == 1)
     {
+        Serial.println("Sensors: SHT21 starting");
         sht21.begin();
+        Serial.println("Sensors: SHT21 started");
     }
 
     if (atoi(config.sensor_bme280_on) == 1)
     {
+        Serial.println("Sensors: BME280 starting");
         initBme280();
+        Serial.println("Sensors: BME280 started");
     }
 
     if (atoi(config.sensor_bh1750_on) == 1)
     {
+        Serial.println("Sensors: BH1750 starting");
         lightMeter.begin();
+        Serial.println("Sensors: BH1750 started");
     }
+
+    Serial.println("Sensors: started");
 }
 
 SensorData getDht22Data()
@@ -798,10 +814,8 @@ void renderSensorValues()
     {
         data3.tempStr = floatToString(data3.temp, VALUE_TEMP);
         data3.humidityStr = floatToString(data3.humidity, VALUE_HUMIDITY);
-        data3.pressureStr = floatToString(data3.pressure * 0.0295333727 * 25.4, VALUE_PRESSURE, 3, 0);
         Serial.println(String("Temp 3    : " + data3.tempStr));
         Serial.println(String("RH 3      : " + data3.humidityStr));
-        Serial.println(String("Pressure 3: " + data3.pressureStr));
     }
 
     if (atoi(config.sensor_bme280_on) == 1)
