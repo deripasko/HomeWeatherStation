@@ -6,6 +6,7 @@ const serverPort = config.serverPort;
 const serverSocket = dgram.createSocket('udp4');
 const multicastAddress = config.multicastAddress;
 const multicastPort = config.multicastPort;
+const sensorDelay = config.sensorDelay;
 
 var sidToAddress = {};
 var sidToPort = {};
@@ -24,7 +25,7 @@ function sendSensorData(sensorId, temperature, humidity, gatewayAddress) {
                 humidity1: humidity,
                 ip: gatewayAddress,
                 mac: sensorId,
-                delay: 10
+                delay: sensorDelay
             }
         },
         function (error, response, body) {
@@ -135,4 +136,4 @@ sendWhois();
 setInterval(function () {
     console.log('Requesting data...');
     sendWhois();
-}, 30000);
+}, sensorDelay * 1000);
